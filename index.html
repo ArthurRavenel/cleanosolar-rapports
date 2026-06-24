@@ -219,12 +219,12 @@ async function showChantier(pageId){
 
     let adresse="",mapsUrl="",infos=[],miseEnPlace=[];
     for(const b of blocks.results){
-      // Colonnes avec callouts (infos générales)
-      if(b.type==="column_list"){
+      // Colonnes avec callouts (infos générales) — charge récursivement
+      if(b.type==="column_list"&&b.has_children){
         const txts=await getChildTexts(b.id);
         infos=infos.concat(txts);
       }
-      // Toggle Adresse
+      // Toggles heading_2
       if(b.type==="heading_2"&&b.has_children){
         const htxt=b.heading_2.rich_text.map(r=>r.plain_text).join("").toLowerCase();
         if(htxt.includes("adresse")){
@@ -234,13 +234,16 @@ async function showChantier(pageId){
               if(c.type==="paragraph"){const t=c.paragraph.rich_text.map(r=>r.plain_text).join("").trim();if(t)adresse+=t+" ";}
               if(c.type==="embed"||c.type==="bookmark"){const u=c[c.type]&&c[c.type].url;if(u&&u.includes("map"))mapsUrl=u;}
               if(c.type==="link_preview"){const u=c.link_preview&&c.link_preview.url;if(u&&u.includes("map"))mapsUrl=u;}
+              if(c.has_children){
+                const sub=await getChildTexts(c.id);
+                sub.forEach(t=>{if(t.includes("map")||t.includes("http"))mapsUrl=t;else adresse+=t+" ";});
+              }
             }
           }
         }
-        // Toggle Mise en place chantier
         if(htxt.includes("mise en place")){
-          const sub=await getChildTexts(b.id);
-          miseEnPlace=miseEnPlace.concat(sub);
+          const txts=await getChildTexts(b.id);
+          miseEnPlace=miseEnPlace.concat(txts);
         }
       }
     }
