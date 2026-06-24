@@ -297,8 +297,8 @@ function s0(){
             <span class="badge" style="background:${bg};color:${col}">${c.etat}</span>
           </div>
           <div class="ci-btns">
-            <button class="chantier-btn" onclick="event.stopPropagation();showChantier('${c.pageId}')">📍 Voir le chantier</button>
-            <button class="chantier-btn" onclick="event.stopPropagation();setSel('${c.pageId}');go(1)" style="background:#3ECFB2;border-color:#3ECFB2">✏️ Remplir rapport</button>
+            <button class="chantier-btn" onclick="event.stopPropagation();showChantier(this.dataset.id)" data-id="${c.pageId}">📍 Voir le chantier</button>
+            <button class="chantier-btn" onclick="event.stopPropagation();setSel(this.dataset.id);go(1)" data-id="${c.pageId}" style="background:#3ECFB2;border-color:#3ECFB2">✏️ Remplir rapport</button>
           </div>
         </div>`;}).join("")||`<div style="text-align:center;padding:20px;color:#94a3b8">Aucune intervention trouvée</div>`}
     </div>
@@ -306,7 +306,7 @@ function s0(){
   </div>`;
 }
 function renderS0(){document.getElementById("main").innerHTML=s0();}
-function setSel(id){sel=clients.find(c=>c.pageId===id);render();}
+function setSel(id){sel=clients.find(c=>c.pageId===id)||null;render();}
 
 // ---- Step 1 : Photos ----
 function s1(){
