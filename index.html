@@ -186,32 +186,56 @@ async function showChantier(pageId){
     const blocks=await notionCall("GET",`blocks/${clientPageId}/children?page_size=80`);
     if(!blocks||!blocks.results)throw new Error("Blocs introuvables");
 
-    let adresse="",mapsUrl="",infos=[];
-    for(const b of blocks.results){
-      if(b.type==="callout"){
-        const txt=b.callout.rich_text.map(r=>r.plain_text).join("").trim();
-        if(txt)infos.push(txt);
+    // Récupère récursivement tous les textes des blocs enfants
+    async function getChildTexts(blockId){
+      const ch=await notionCall("GET",`blocks/${blockId}/children?page_size=50`);
+      if(!ch||!ch.results)return[];
+      let texts=[];
+      for(const b of ch.results){
+        if(b.type==="callout"){
+          const t=b.callout.rich_text.map(r=>r.plain_text).join("").trim();
+          if(t)texts.push(t);
+        }
+        if(b.type==="paragraph"){
+          const t=b.paragraph.rich_text.map(r=>r.plain_text).join("").trim();
+          if(t)texts.push(t);
+        }
+        if(b.type==="bulleted_list_item"){
+          const t=b.bulleted_list_item.rich_text.map(r=>r.plain_text).join("").trim();
+          if(t)texts.push(t);
+        }
+        if(b.type==="column_list"||b.type==="column"){
+          const sub=await getChildTexts(b.id);
+          texts=texts.concat(sub);
+        }
       }
-      if(b.type==="heading_2"){
+      return texts;
+    }
+
+    let adresse="",mapsUrl="",infos=[],miseEnPlace=[];
+    for(const b of blocks.results){
+      // Colonnes avec callouts (infos générales)
+      if(b.type==="column_list"){
+        const txts=await getChildTexts(b.id);
+        infos=infos.concat(txts);
+      }
+      // Toggle Adresse
+      if(b.type==="heading_2"&&b.has_children){
         const htxt=b.heading_2.rich_text.map(r=>r.plain_text).join("").toLowerCase();
         if(htxt.includes("adresse")){
-          const ch=await notionCall("GET",`blocks/${b.id}/children?page_size=10`);
+          const ch=await notionCall("GET",`blocks/${b.id}/children?page_size=20`);
           if(ch&&ch.results){
             for(const c of ch.results){
-              if(c.type==="paragraph"){
-                const pt=c.paragraph.rich_text.map(r=>r.plain_text).join("").trim();
-                if(pt)adresse+=pt+" ";
-              }
-              if(c.type==="embed"||c.type==="bookmark"){
-                const u=c[c.type]&&c[c.type].url;
-                if(u&&u.includes("map"))mapsUrl=u;
-              }
-              if(c.type==="link_preview"){
-                const u=c.link_preview&&c.link_preview.url;
-                if(u&&u.includes("map"))mapsUrl=u;
-              }
+              if(c.type==="paragraph"){const t=c.paragraph.rich_text.map(r=>r.plain_text).join("").trim();if(t)adresse+=t+" ";}
+              if(c.type==="embed"||c.type==="bookmark"){const u=c[c.type]&&c[c.type].url;if(u&&u.includes("map"))mapsUrl=u;}
+              if(c.type==="link_preview"){const u=c.link_preview&&c.link_preview.url;if(u&&u.includes("map"))mapsUrl=u;}
             }
           }
+        }
+        // Toggle Mise en place chantier
+        if(htxt.includes("mise en place")){
+          const sub=await getChildTexts(b.id);
+          miseEnPlace=miseEnPlace.concat(sub);
         }
       }
     }
@@ -236,8 +260,10 @@ async function showChantier(pageId){
         <a href="${gnav}" target="_blank" style="background:#3ECFB2;color:#1a1a1a;border-radius:10px;padding:12px 8px;text-align:center;text-decoration:none;font-size:12px;font-weight:700;display:block">🧭 Itinéraire Google</a>
         <a href="${amap}" target="_blank" style="background:#3ECFB2;color:#1a1a1a;border-radius:10px;padding:12px 8px;text-align:center;text-decoration:none;font-size:12px;font-weight:700;display:block">🍎 Plans Apple</a>
       </div>
-      ${infos.length?`<div style="font-weight:700;font-size:13px;margin-bottom:8px">Informations chantier</div>
+      ${infos.length?`<div style="font-weight:700;font-size:13px;margin-bottom:8px">ℹ️ Informations générales</div>
       ${infos.map(i=>`<div style="background:#f8fafc;border-radius:8px;padding:8px 12px;margin-bottom:6px;font-size:12px;color:#374151;line-height:1.5">${i}</div>`).join("")}`:""}
+      ${miseEnPlace.length?`<div style="font-weight:700;font-size:13px;margin:12px 0 8px">🔧 Mise en place chantier</div>
+      ${miseEnPlace.map(i=>`<div style="background:#f0fdf9;border-radius:8px;padding:8px 12px;margin-bottom:6px;font-size:12px;color:#374151;line-height:1.5">${i}</div>`).join("")}`:""}
     `);
   }catch(e){
     openModal(`<button onclick="closeModal()" style="float:right;background:none;border:none;font-size:22px;cursor:pointer">×</button><div style="padding:20px;color:#dc2626;font-size:13px">Erreur : ${e.message}</div>`);
