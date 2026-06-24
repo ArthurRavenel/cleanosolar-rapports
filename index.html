@@ -213,7 +213,7 @@ function s1(){
     <h2>2. Photos d'intervention</h2>
     <p style="font-size:12px;color:#64748b;margin-bottom:12px"><strong>${sel.nom}</strong> · ${sel.m2} m²</p>
     <div class="pgrid">${PHOTOS.map(s=>{const p=photos[s.k];return`<label class="pbox${p?" got":""}">
-      <input type="file" accept="image/*" capture="environment" onchange="addPhoto('${s.k}',this)">
+      <input type="file" accept="image/*" onchange="addPhoto('${s.k}',this)">
       ${p?`<img src="${p.url}"><div class="plbl ok">✓ ${s.l}</div>`:`<div style="font-size:20px;padding-top:8px">📷</div><div class="plbl">${s.l}</div>`}
     </label>`;}).join("")}</div>
     <div class="warn">${Object.keys(photos).length}/${PHOTOS.length} photos · L'appareil photo s'ouvre directement</div>
