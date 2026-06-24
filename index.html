@@ -9,17 +9,18 @@
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f0fdf9;min-height:100vh;padding:14px 10px;font-size:15px}
 .wrap{max-width:600px;margin:0 auto}
 .header{background:linear-gradient(135deg,#1a1a1a,#2a2a2a);border-radius:14px;padding:16px 20px;margin-bottom:14px;color:#fff;display:flex;align-items:center;gap:14px}
-.logo{font-size:17px;font-weight:800}.sub{font-size:11px;opacity:.6;color:#3ECFB2}
+.logo{font-size:18px;font-weight:900;letter-spacing:-0.5px}
+.sub{font-size:11px;opacity:.6;color:#3ECFB2}
 .progress{display:flex;margin-bottom:14px;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.07)}
 .ps{flex:1;padding:8px 2px;text-align:center;font-size:10px;background:#f8fafc;color:#94a3b8;border-right:1px solid #e2e8f0}
 .ps:last-child{border-right:none}
 .ps.active{background:#3ECFB2;color:#1a1a1a;font-weight:700}
 .ps.done{background:#1a1a1a;color:#3ECFB2}
 .card{background:#fff;border-radius:13px;padding:18px;box-shadow:0 1px 5px rgba(0,0,0,.08);margin-bottom:12px}
-h2{font-size:15px;color:#1e3a5f;margin-bottom:12px;font-weight:700}
-h3{font-size:13px;color:#1e3a5f;margin:14px 0 8px;font-weight:700;border-left:3px solid #2563eb;padding-left:8px}
+h2{font-size:15px;color:#1a1a1a;margin-bottom:12px;font-weight:700}
+h3{font-size:13px;color:#1a1a1a;margin:14px 0 8px;font-weight:700;border-left:3px solid #3ECFB2;padding-left:8px}
 input,textarea{width:100%;border:1.5px solid #e2e8f0;border-radius:8px;padding:10px 12px;font-size:15px;font-family:inherit;outline:none;background:#fff;-webkit-appearance:none}
-input:focus,textarea:focus{border-color:#2563eb}
+input:focus,textarea:focus{border-color:#3ECFB2}
 textarea{resize:vertical;min-height:70px}
 .lbl{font-size:12px;font-weight:700;color:#374151;display:block;margin-bottom:4px;margin-top:12px}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
@@ -30,54 +31,57 @@ textarea{resize:vertical;min-height:70px}
 .bg{background:#22c55e;color:#fff}
 .err{background:#fee2e2;color:#dc2626;padding:10px 14px;border-radius:10px;margin-bottom:12px;font-size:13px;display:none}
 .ok-box{background:#f0fdf4;border:1px solid #86efac;border-radius:10px;padding:12px;text-align:center;color:#16a34a;font-weight:700;font-size:14px;margin-top:8px}
-.info{background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:10px 14px;font-size:12px;color:#1e40af;margin-top:10px;line-height:1.6}
+.info{background:#f0fdf9;border:1px solid #3ECFB2;border-radius:10px;padding:10px 14px;font-size:12px;color:#1a1a1a;margin-top:10px;line-height:1.6}
 .warn{background:#fef9c3;border-radius:8px;padding:8px 12px;font-size:12px;color:#92400e;margin-top:10px}
 .loading{text-align:center;padding:40px 20px;color:#64748b;font-size:14px}
 .spinner{display:inline-block;width:28px;height:28px;border:3px solid #e2e8f0;border-top-color:#3ECFB2;border-radius:50%;animation:spin .8s linear infinite;margin-bottom:10px}
 @keyframes spin{to{transform:rotate(360deg)}}
-.ci{padding:12px 14px;border-radius:10px;border:1.5px solid #e8ecf0;background:#fafbfc;cursor:pointer;display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.ci{padding:12px 14px;border-radius:10px;border:1.5px solid #e8ecf0;background:#fafbfc;cursor:pointer;margin-bottom:6px}
 .ci.sel{border-color:#3ECFB2;background:#f0fdf9}
-.ci-name{font-weight:600;font-size:14px;color:#1a1a1a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ci-sub{font-size:11px;color:#64748b;margin-top:2px}
-.badge{font-size:10px;padding:3px 8px;border-radius:20px;white-space:nowrap;margin-left:8px;flex-shrink:0;font-weight:600}
-.scroll{max-height:380px;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.ci-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.ci-name{font-weight:600;font-size:14px;color:#1a1a1a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
+.ci-sub{font-size:11px;color:#64748b;margin-top:3px}
+.badge{font-size:10px;padding:3px 8px;border-radius:20px;white-space:nowrap;font-weight:600;flex-shrink:0}
+.ci-btns{display:flex;gap:6px;margin-top:8px}
+.chantier-btn{background:#f0fdf9;border:1.5px solid #3ECFB2;border-radius:8px;padding:7px 10px;font-size:12px;font-weight:700;cursor:pointer;color:#1a1a1a;flex:1;text-align:center}
+.scroll{max-height:420px;overflow-y:auto;-webkit-overflow-scrolling:touch}
 .nav{display:flex;gap:10px;margin-top:12px}
-.prev-hdr{background:linear-gradient(135deg,#1e3a5f,#2563eb);padding:13px 16px;color:#fff;border-radius:11px 11px 0 0;display:flex;justify-content:space-between}
+.prev-hdr{background:linear-gradient(135deg,#1a1a1a,#2a2a2a);padding:13px 16px;color:#fff;border-radius:11px 11px 0 0;display:flex;justify-content:space-between}
 .prev-body{border:1.5px solid #e2e8f0;border-top:none;border-radius:0 0 11px 11px;padding:14px 16px;margin-bottom:12px;font-size:13px}
 .mgrid{display:grid;grid-template-columns:1fr 1fr;gap:5px 14px;background:#f8fafc;border-radius:8px;padding:11px;margin-bottom:11px}
 .sec{background:#f8fafc;border-radius:6px;padding:8px 10px;line-height:1.5;font-size:13px;margin-bottom:8px}
-.stitle{font-weight:700;color:#1e3a5f;font-size:11px;margin-bottom:3px;margin-top:8px}
-
-/* Photo sections */
+.stitle{font-weight:700;color:#1a1a1a;font-size:11px;margin-bottom:3px;margin-top:8px}
 .photo-section{background:#f8fafc;border-radius:12px;padding:14px;margin-bottom:12px}
 .photo-section-title{font-size:13px;font-weight:700;color:#1a1a1a;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}
 .photo-grid{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px}
 .photo-item{position:relative;width:calc(33% - 6px)}
-.photo-item img{width:100%;height:80px;object-fit:cover;border-radius:8px;border:1px solid #e2e8f0}
-.photo-item .del-btn{position:absolute;top:3px;right:3px;background:rgba(220,38,38,0.85);color:#fff;border:none;border-radius:50%;width:22px;height:22px;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1}
+.photo-item img,.photo-item video{width:100%;height:80px;object-fit:cover;border-radius:8px;border:1px solid #e2e8f0}
+.photo-item .del-btn{position:absolute;top:3px;right:3px;background:rgba(220,38,38,0.85);color:#fff;border:none;border-radius:50%;width:22px;height:22px;font-size:13px;cursor:pointer;line-height:22px;text-align:center;padding:0}
 .photo-item .photo-comment{margin-top:4px;font-size:11px;width:100%;border:1px solid #e2e8f0;border-radius:6px;padding:4px 6px;background:#fff}
 .add-photo-btn{display:flex;align-items:center;justify-content:center;gap:6px;background:#fff;border:2px dashed #cbd5e1;border-radius:10px;padding:10px;cursor:pointer;font-size:13px;color:#64748b;width:100%;margin-top:4px}
 .add-photo-btn input{display:none}
-
-/* Panneaux cassés */
 .casse-item{background:#fff;border:1.5px solid #fca5a5;border-radius:10px;padding:12px;margin-bottom:10px}
 .casse-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
 .casse-photo-box{border:2px dashed #fca5a5;border-radius:8px;overflow:hidden;text-align:center;cursor:pointer;min-height:80px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#fff5f5}
 .casse-photo-box.has{border-color:#22c55e;background:#f0fdf4}
 .casse-photo-box input{display:none}
 .casse-photo-box img{width:100%;height:75px;object-fit:cover}
+/* Modal */
+#modal{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.55);z-index:1000;align-items:center;justify-content:center;padding:16px}
+.modal-box{background:#fff;border-radius:16px;padding:20px;max-width:500px;width:100%;max-height:85vh;overflow-y:auto;position:relative}
 </style>
 </head>
 <body>
+<div id="modal"></div>
 <div class="wrap">
   <div class="header">
-    <svg width="36" height="36" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg width="38" height="38" viewBox="0 0 100 100" fill="none">
       <circle cx="50" cy="50" r="44" stroke="url(#g)" stroke-width="12" fill="none"/>
       <defs><linearGradient id="g" x1="50" y1="6" x2="50" y2="94" gradientUnits="userSpaceOnUse">
-        <stop offset="0%" stop-color="#1a1a1a"/><stop offset="100%" stop-color="#3ECFB2"/>
+        <stop offset="0%" stop-color="#2a2a2a"/><stop offset="100%" stop-color="#3ECFB2"/>
       </linearGradient></defs>
     </svg>
-    <div><div class="logo" style="font-size:18px;font-weight:900;letter-spacing:-0.5px">cleanosolar</div><div class="sub">Rapport d'intervention 2026</div></div>
+    <div><div class="logo">cleanosolar</div><div class="sub">Rapport d'intervention 2026</div></div>
   </div>
   <div class="progress" id="prog"></div>
   <div class="err" id="err"></div>
@@ -102,25 +106,22 @@ const ec=e=>{const c=(EC[e]||"#f3f4f6:#6b7280").split(":");return{bg:c[0],col:c[
 let step=0,sel=null,saved=false,sending=false,q="",emailObj="",emailBody="";
 let clients=[],loadingClients=false;
 let R={date:today,intervenants:"2",duree:"0.5",produits:"Eau pure",observations:"",taches:"",difficultes:"",recommandations:""};
-
-// Photos: {toit:[], avant:[], apres:[], tache:[], eau:[], acces:[]}
 let photos={toit:[],avant:[],apres:[],tache:[],eau:[],acces:[],extra:[]};
-// Panneaux cassés: [{photo_panneau, photo_position, commentaire}]
 let panneauxCasses=[];
 
 const PHOTO_CATS=[
-  {k:"toit",l:"🏠 Photos générales du toit",multi:true},
-  {k:"avant",l:"🔴 Panneaux Avant nettoyage",multi:true},
-  {k:"apres",l:"✅ Panneaux Après nettoyage",multi:true},
-  {k:"tache",l:"🔧 Tâches significatives",multi:true},
-  {k:"eau",l:"💧 Point d'eau",multi:true},
-  {k:"acces",l:"🪜 Accès toiture",multi:true},
+  {k:"toit",l:"🏠 Photos générales du toit"},
+  {k:"avant",l:"🔴 Panneaux Avant nettoyage"},
+  {k:"apres",l:"✅ Panneaux Après nettoyage"},
+  {k:"tache",l:"🔧 Tâches significatives"},
+  {k:"eau",l:"💧 Point d'eau"},
+  {k:"acces",l:"🪜 Accès toiture"},
 ];
 
 function showErr(m){const e=document.getElementById("err");e.textContent=m;e.style.display=m?"block":"none";}
-
 function toDataURL(file){return new Promise((res,rej)=>{const r=new FileReader();r.onload=e=>res(e.target.result);r.onerror=rej;r.readAsDataURL(file);});}
 
+// ---- Chargement clients ----
 async function loadClients(){
   loadingClients=true;render();
   try{
@@ -130,25 +131,114 @@ async function loadClients(){
       if(cursor)body.start_cursor=cursor;
       const data=await notionCall("POST",`databases/${DB_ID}/query`,body);
       if(data.object==="error")throw new Error(data.message);
-      all=all.concat(data.results);
-      hasMore=data.has_more;cursor=data.next_cursor;
+      all=all.concat(data.results);hasMore=data.has_more;cursor=data.next_cursor;
     }
     clients=all.map(p=>{
-      const props=p.properties;
-      const nomProp=props["Nom"];
-      const nom=(nomProp&&nomProp.rich_text&&nomProp.rich_text.length>0)?nomProp.rich_text[0].plain_text:"Sans nom";
-      const email=(props["Email"]&&props["Email"].email)?props["Email"].email:"";
-      const m2=(props["m2"]&&props["m2"].number)?props["m2"].number:0;
-      const etat=(props["État"]&&props["État"].status)?props["État"].status.name:"";
-      const dateVal=(props["Date"]&&props["Date"].date)?props["Date"].date.start:"";
-      const id=(props["Identifiant"]&&props["Identifiant"].title&&props["Identifiant"].title.length>0)?props["Identifiant"].title[0].plain_text:"";
+      const pr=p.properties;
+      const nom=pr["Nom"]&&pr["Nom"].rich_text&&pr["Nom"].rich_text.length?pr["Nom"].rich_text[0].plain_text:"Sans nom";
+      const email=pr["Email"]&&pr["Email"].email?pr["Email"].email:"";
+      const m2=pr["m2"]&&pr["m2"].number?pr["m2"].number:0;
+      const etat=pr["État"]&&pr["État"].status?pr["État"].status.name:"";
+      const dateVal=pr["Date"]&&pr["Date"].date?pr["Date"].date.start:"";
+      const id=pr["Identifiant"]&&pr["Identifiant"].title&&pr["Identifiant"].title.length?pr["Identifiant"].title[0].plain_text:"";
       return{url:p.url,pageId:p.id,nom,email,m2,etat,date:dateVal,id};
     });
-    clients.sort((a,b)=>{if(!a.date)return 1;if(!b.date)return -1;return a.date<b.date?-1:1;});
+    clients.sort((a,b)=>!a.date?1:!b.date?-1:a.date<b.date?-1:1);
   }catch(e){showErr("Erreur chargement Notion: "+e.message);}
   loadingClients=false;render();
 }
 
+// ---- Modal Chantier ----
+function openModal(html){
+  const m=document.getElementById("modal");
+  m.style.display="flex";
+  m.innerHTML=`<div class="modal-box">${html}</div>`;
+  m.onclick=e=>{if(e.target===m)m.style.display="none";};
+}
+function closeModal(){document.getElementById("modal").style.display="none";}
+
+async function showChantier(pageId){
+  openModal(`<div style="text-align:center;padding:30px"><div class="spinner"></div><br>Chargement infos chantier...</div>`);
+  try{
+    // Récupère la page d'intervention pour trouver le lien client
+    const page=await notionCall("GET",`pages/${pageId}`);
+    const nomProp=page.properties&&page.properties["Nom"];
+    let clientPageId=null;
+    if(nomProp&&nomProp.rich_text){
+      for(const rt of nomProp.rich_text){
+        if(rt.text&&rt.text.link&&rt.text.link.url){
+          const m2=rt.text.link.url.match(/\/p\/([a-f0-9]{32})/);
+          if(m2)clientPageId=m2[1];
+        }
+      }
+    }
+    if(!clientPageId){
+      openModal(`<button onclick="closeModal()" style="float:right;background:none;border:none;font-size:22px;cursor:pointer">×</button><div style="padding:20px;color:#dc2626;font-size:13px">Aucune page client liée trouvée.</div>`);
+      return;
+    }
+    // Récupère les blocs de la page client
+    const blocks=await notionCall("GET",`blocks/${clientPageId}/children?page_size=80`);
+    if(!blocks||!blocks.results)throw new Error("Blocs introuvables");
+
+    let adresse="",mapsUrl="",infos=[];
+    for(const b of blocks.results){
+      if(b.type==="callout"){
+        const txt=b.callout.rich_text.map(r=>r.plain_text).join("").trim();
+        if(txt)infos.push(txt);
+      }
+      if(b.type==="heading_2"){
+        const htxt=b.heading_2.rich_text.map(r=>r.plain_text).join("").toLowerCase();
+        if(htxt.includes("adresse")){
+          const ch=await notionCall("GET",`blocks/${b.id}/children?page_size=10`);
+          if(ch&&ch.results){
+            for(const c of ch.results){
+              if(c.type==="paragraph"){
+                const pt=c.paragraph.rich_text.map(r=>r.plain_text).join("").trim();
+                if(pt)adresse+=pt+" ";
+              }
+              if(c.type==="embed"||c.type==="bookmark"){
+                const u=c[c.type]&&c[c.type].url;
+                if(u&&u.includes("map"))mapsUrl=u;
+              }
+              if(c.type==="link_preview"){
+                const u=c.link_preview&&c.link_preview.url;
+                if(u&&u.includes("map"))mapsUrl=u;
+              }
+            }
+          }
+        }
+      }
+    }
+    adresse=adresse.trim();
+    const dest=encodeURIComponent(adresse||sel.nom);
+    const gmaps=mapsUrl||`https://www.google.com/maps/search/?api=1&query=${dest}`;
+    const gsat=`https://www.google.com/maps/search/?api=1&query=${dest}&layer=satellite`;
+    const gnav=`https://www.google.com/maps/dir/?api=1&destination=${dest}`;
+    const amap=`https://maps.apple.com/?q=${dest}`;
+
+    openModal(`
+      <button onclick="closeModal()" style="float:right;background:none;border:none;font-size:24px;cursor:pointer;color:#64748b;line-height:1">×</button>
+      <div style="font-weight:800;font-size:16px;color:#1a1a1a;margin-bottom:2px">📋 Infos chantier</div>
+      <div style="font-size:12px;color:#3ECFB2;font-weight:700;margin-bottom:16px">${clients.find(c=>c.pageId===pageId)?.nom||""}</div>
+      ${adresse?`<div style="background:#f0fdf9;border:1.5px solid #3ECFB2;border-radius:10px;padding:10px 14px;margin-bottom:14px">
+        <div style="font-weight:700;font-size:12px;color:#1a1a1a;margin-bottom:3px">📍 Adresse</div>
+        <div style="font-size:13px;color:#374151">${adresse}</div>
+      </div>`:""}
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px">
+        <a href="${gmaps}" target="_blank" style="background:#1a1a1a;color:#fff;border-radius:10px;padding:12px 8px;text-align:center;text-decoration:none;font-size:12px;font-weight:700;display:block">🗺️ Google Maps</a>
+        <a href="${gsat}" target="_blank" style="background:#1a1a1a;color:#fff;border-radius:10px;padding:12px 8px;text-align:center;text-decoration:none;font-size:12px;font-weight:700;display:block">🛰️ Vue satellite</a>
+        <a href="${gnav}" target="_blank" style="background:#3ECFB2;color:#1a1a1a;border-radius:10px;padding:12px 8px;text-align:center;text-decoration:none;font-size:12px;font-weight:700;display:block">🧭 Itinéraire Google</a>
+        <a href="${amap}" target="_blank" style="background:#3ECFB2;color:#1a1a1a;border-radius:10px;padding:12px 8px;text-align:center;text-decoration:none;font-size:12px;font-weight:700;display:block">🍎 Plans Apple</a>
+      </div>
+      ${infos.length?`<div style="font-weight:700;font-size:13px;margin-bottom:8px">Informations chantier</div>
+      ${infos.map(i=>`<div style="background:#f8fafc;border-radius:8px;padding:8px 12px;margin-bottom:6px;font-size:12px;color:#374151;line-height:1.5">${i}</div>`).join("")}`:""}
+    `);
+  }catch(e){
+    openModal(`<button onclick="closeModal()" style="float:right;background:none;border:none;font-size:22px;cursor:pointer">×</button><div style="padding:20px;color:#dc2626;font-size:13px">Erreur : ${e.message}</div>`);
+  }
+}
+
+// ---- Render ----
 function render(){
   document.getElementById("prog").innerHTML=STEPS.map((l,i)=>`<div class="ps ${i===step?"active":i<step?"done":""}">${i<step?"✓ ":""}${l}</div>`).join("");
   const el=document.getElementById("main");
@@ -176,10 +266,9 @@ function canNext(){
   if(step===3)return saved;
   return true;
 }
-
 function go(n){showErr("");step=n;render();}
 
-// STEP 0 - Client
+// ---- Step 0 : Client ----
 function s0(){
   if(loadingClients)return`<div class="card"><div class="loading"><div class="spinner"></div><br>Chargement depuis Notion...</div></div>`;
   if(!clients.length)return`<div class="card"><h2>1. Sélectionner l'intervention</h2><button class="btn bp" onclick="loadClients()">🔗 Charger les interventions</button></div>`;
@@ -190,11 +279,22 @@ function s0(){
       <input placeholder="🔍 Nom ou référence..." value="${q}" oninput="q=this.value;renderS0()" style="flex:1">
       <button onclick="loadClients()" style="background:#f1f5f9;border:1.5px solid #e2e8f0;border-radius:8px;padding:10px 12px;cursor:pointer;font-size:16px;flex-shrink:0">🔄</button>
     </div>
-    <div style="font-size:11px;color:#94a3b8;margin-bottom:8px">${list.length} intervention(s) — <span style="color:#22c55e">🟢 live</span></div>
-    <div class="scroll">${list.map(c=>{const{bg,col}=ec(c.etat);return`<div class="ci${sel&&sel.pageId===c.pageId?" sel":""}" onclick="setSel('${c.pageId}')">
-      <div style="flex:1;min-width:0"><div class="ci-name">${c.nom}</div><div class="ci-sub">${c.id?" #"+c.id+" · ":""}${c.date} · ${c.m2} m²</div></div>
-      <span class="badge" style="background:${bg};color:${col}">${c.etat}</span>
-    </div>`;}).join("")||`<div style="text-align:center;padding:20px;color:#94a3b8">Aucune intervention trouvée</div>`}
+    <div style="font-size:11px;color:#94a3b8;margin-bottom:8px">${list.length} intervention(s) — <span style="color:#3ECFB2">🟢 live</span></div>
+    <div class="scroll">
+      ${list.map(c=>{const{bg,col}=ec(c.etat);return`
+        <div class="ci${sel&&sel.pageId===c.pageId?" sel":""}" onclick="setSel('${c.pageId}')">
+          <div class="ci-top">
+            <div style="flex:1;min-width:0">
+              <div class="ci-name">${c.nom}</div>
+              <div class="ci-sub">${c.id?"#"+c.id+" · ":""}${c.date?c.date.split("T")[0]:""} · ${c.m2} m²</div>
+            </div>
+            <span class="badge" style="background:${bg};color:${col}">${c.etat}</span>
+          </div>
+          <div class="ci-btns">
+            <button class="chantier-btn" onclick="event.stopPropagation();showChantier('${c.pageId}')">📍 Voir le chantier</button>
+            <button class="chantier-btn" onclick="event.stopPropagation();setSel('${c.pageId}');go(1)" style="background:#3ECFB2;border-color:#3ECFB2">✏️ Remplir rapport</button>
+          </div>
+        </div>`;}).join("")||`<div style="text-align:center;padding:20px;color:#94a3b8">Aucune intervention trouvée</div>`}
     </div>
     ${sel?`<div class="info">✓ Sélectionné : <strong>${sel.nom}</strong></div>`:""}
   </div>`;
@@ -202,103 +302,72 @@ function s0(){
 function renderS0(){document.getElementById("main").innerHTML=s0();}
 function setSel(id){sel=clients.find(c=>c.pageId===id);render();}
 
-// STEP 1 - Photos
+// ---- Step 1 : Photos ----
 function s1(){
   let html=`<div class="card"><h2>2. Photos d'intervention</h2><p style="font-size:12px;color:#64748b;margin-bottom:14px"><strong>${sel.nom}</strong> · ${sel.m2} m²</p>`;
-
-  // Catégories photos
   PHOTO_CATS.forEach(cat=>{
     html+=`<div class="photo-section">
       <div class="photo-section-title"><span>${cat.l}</span><span style="font-size:11px;color:#94a3b8">${photos[cat.k].length} photo(s)</span></div>
-      <div class="photo-grid" id="grid-${cat.k}">
-        ${photos[cat.k].map((p,i)=>`<div class="photo-item">
-          <img src="${p.data}">
-          <button class="del-btn" onclick="delPhoto('${cat.k}',${i})">×</button>
-          <input class="photo-comment" placeholder="Commentaire..." value="${p.comment||""}" oninput="setComment('${cat.k}',${i},this.value)">
-        </div>`).join("")}
-      </div>
-      <label class="add-photo-btn">
-        <input type="file" accept="image/*" multiple onchange="addPhotos('${cat.k}',this)">
-        📷 Ajouter photo(s)
-      </label>
+      <div class="photo-grid">${photos[cat.k].map((p,i)=>`<div class="photo-item">
+        <img src="${p.data}">
+        <button class="del-btn" onclick="delPhoto('${cat.k}',${i})">×</button>
+        <input class="photo-comment" placeholder="Commentaire..." value="${p.comment||""}" oninput="photos['${cat.k}'][${i}].comment=this.value">
+      </div>`).join("")}</div>
+      <label class="add-photo-btn"><input type="file" accept="image/*" multiple onchange="addPhotos('${cat.k}',this)">📷 Ajouter photo(s)</label>
     </div>`;
   });
-
   // Médias supplémentaires
   html+=`<div class="photo-section" style="border:1.5px solid #c4b5fd">
     <div class="photo-section-title"><span>🎬 Médias supplémentaires <span style="font-size:10px;color:#94a3b8;font-weight:400">(optionnel)</span></span><span style="font-size:11px;color:#94a3b8">${photos.extra.length} fichier(s)</span></div>
-    <div class="photo-grid">
-      ${photos.extra.map((p,i)=>`<div class="photo-item">
-        ${p.type==='video'
-          ?`<video src="${p.data}" style="width:100%;height:80px;object-fit:cover;border-radius:8px;border:1px solid #e2e8f0" controls></video>`
-          :`<img src="${p.data}" style="width:100%;height:80px;object-fit:cover;border-radius:8px;border:1px solid #e2e8f0">`}
-        <button class="del-btn" onclick="delExtra(${i})">×</button>
-        <input class="photo-comment" placeholder="Commentaire..." value="${p.comment||""}" oninput="setExtraComment(${i},this.value)">
-      </div>`).join("")}
-    </div>
-    <label class="add-photo-btn">
-      <input type="file" accept="image/*,video/*" multiple onchange="addExtra(this)">
-      📎 Ajouter photo(s) ou vidéo(s)
-    </label>
+    <div class="photo-grid">${photos.extra.map((p,i)=>`<div class="photo-item">
+      ${p.type==='video'?`<video src="${p.data}" style="width:100%;height:80px;object-fit:cover;border-radius:8px;border:1px solid #e2e8f0" controls></video>`:`<img src="${p.data}">`}
+      <button class="del-btn" onclick="delExtra(${i})">×</button>
+      <input class="photo-comment" placeholder="Commentaire..." value="${p.comment||""}" oninput="photos.extra[${i}].comment=this.value">
+    </div>`).join("")}</div>
+    <label class="add-photo-btn"><input type="file" accept="image/*,video/*" multiple onchange="addExtra(this)">📎 Ajouter photo(s) ou vidéo(s)</label>
   </div>`;
-
   // Panneaux cassés
   html+=`<div class="photo-section" style="border:1.5px solid #fca5a5">
     <div class="photo-section-title"><span>🔴 Panneaux cassés</span><button onclick="addCasse()" style="background:#fee2e2;color:#dc2626;border:none;border-radius:8px;padding:4px 10px;font-size:12px;font-weight:700;cursor:pointer">+ Ajouter</button></div>
-    <div id="casse-list">
-      ${panneauxCasses.map((c,i)=>`<div class="casse-item">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-          <strong style="font-size:12px;color:#dc2626">Panneau cassé #${i+1}</strong>
-          <button onclick="delCasse(${i})" style="background:none;border:none;color:#dc2626;font-size:18px;cursor:pointer">×</button>
-        </div>
-        <div class="casse-grid">
-          <label class="casse-photo-box${c.photo?'has':''}">
-            <input type="file" accept="image/*" onchange="setCassePhoto(${i},'photo',this)">
-            ${c.photo?`<img src="${c.photo}">`:`<div style="font-size:18px">📷</div><div style="font-size:10px;color:#94a3b8">Photo panneau</div>`}
-          </label>
-          <label class="casse-photo-box${c.position?'has':''}">
-            <input type="file" accept="image/*" onchange="setCassePhoto(${i},'position',this)">
-            ${c.position?`<img src="${c.position}">`:`<div style="font-size:18px">📍</div><div style="font-size:10px;color:#94a3b8">Position</div>`}
-          </label>
-        </div>
-        <input placeholder="Description du dommage..." value="${c.comment||""}" oninput="setCasseComment(${i},this.value)" style="font-size:13px">
-      </div>`).join("")||`<div style="font-size:12px;color:#94a3b8;text-align:center;padding:10px">Aucun panneau cassé signalé</div>`}
-    </div>
+    ${panneauxCasses.map((c,i)=>`<div class="casse-item">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <strong style="font-size:12px;color:#dc2626">Panneau cassé #${i+1}</strong>
+        <button onclick="delCasse(${i})" style="background:none;border:none;color:#dc2626;font-size:18px;cursor:pointer;line-height:1">×</button>
+      </div>
+      <div class="casse-grid">
+        <label class="casse-photo-box${c.photo?" has":""}">
+          <input type="file" accept="image/*" onchange="setCassePhoto(${i},'photo',this)">
+          ${c.photo?`<img src="${c.photo}">`:`<div style="font-size:18px">📷</div><div style="font-size:10px;color:#94a3b8">Photo panneau</div>`}
+        </label>
+        <label class="casse-photo-box${c.position?" has":""}">
+          <input type="file" accept="image/*" onchange="setCassePhoto(${i},'position',this)">
+          ${c.position?`<img src="${c.position}">`:`<div style="font-size:18px">📍</div><div style="font-size:10px;color:#94a3b8">Position</div>`}
+        </label>
+      </div>
+      <input placeholder="Description du dommage..." value="${c.comment||""}" oninput="panneauxCasses[${i}].comment=this.value" style="font-size:13px">
+    </div>`).join("")||`<div style="font-size:12px;color:#94a3b8;text-align:center;padding:10px">Aucun panneau cassé signalé</div>`}
   </div>`;
-
-  html+=`<div class="warn">${Object.values(photos).flat().length} photo(s) · ${panneauxCasses.length} panneau(x) cassé(s)</div></div>`;
+  const total=Object.values(photos).flat().length;
+  html+=`<div class="warn">${total} photo(s)/vidéo(s) · ${panneauxCasses.length} panneau(x) cassé(s)</div></div>`;
   return html;
 }
 
 async function addPhotos(key,input){
-  const files=Array.from(input.files);
-  for(const f of files){const data=await toDataURL(f);photos[key].push({data,name:f.name,comment:""});}
-  render();
+  for(const f of Array.from(input.files)){const data=await toDataURL(f);photos[key].push({data,name:f.name,comment:""});}render();
 }
 function delPhoto(key,i){photos[key].splice(i,1);render();}
-function setComment(key,i,v){photos[key][i].comment=v;}
-
 async function addExtra(input){
-  const files=Array.from(input.files);
-  for(const f of files){
-    const data=await toDataURL(f);
-    const type=f.type.startsWith('video')?'video':'image';
-    photos.extra.push({data,name:f.name,type,comment:""});
-  }
-  render();
+  for(const f of Array.from(input.files)){const data=await toDataURL(f);const type=f.type.startsWith("video")?"video":"image";photos.extra.push({data,name:f.name,type,comment:""});}render();
 }
 function delExtra(i){photos.extra.splice(i,1);render();}
-function setExtraComment(i,v){photos.extra[i].comment=v;}
-
 function addCasse(){panneauxCasses.push({photo:"",position:"",comment:""});render();}
 function delCasse(i){panneauxCasses.splice(i,1);render();}
 async function setCassePhoto(i,field,input){
   const f=input.files[0];if(!f)return;
-  const data=await toDataURL(f);panneauxCasses[i][field]=data;render();
+  panneauxCasses[i][field]=await toDataURL(f);render();
 }
-function setCasseComment(i,v){panneauxCasses[i].comment=v;}
 
-// STEP 2 - Rapport
+// ---- Step 2 : Rapport ----
 function s2(){
   return`<div class="card">
     <h2>3. Informations du rapport</h2>
@@ -319,9 +388,9 @@ function s2(){
   </div>`;
 }
 
-// STEP 3 - Aperçu
+// ---- Step 3 : Aperçu ----
 function s3(){
-  const totalPhotos=Object.values(photos).flat().length;
+  const total=Object.values(photos).flat().length;
   const thumbsHtml=PHOTO_CATS.filter(cat=>photos[cat.k].length>0).map(cat=>`
     <div class="stitle">${cat.l}</div>
     <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px">
@@ -330,9 +399,14 @@ function s3(){
         ${p.comment?`<div style="font-size:9px;color:#64748b;max-width:70px">${p.comment}</div>`:""}
       </div>`).join("")}
     </div>`).join("");
-
-  const casseHtml=panneauxCasses.length?`
-    <div class="stitle">🔴 Panneaux cassés (${panneauxCasses.length})</div>
+  const extraHtml=photos.extra.length?`<div class="stitle">🎬 Médias supplémentaires</div>
+    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px">
+      ${photos.extra.map(p=>`<div style="text-align:center">
+        ${p.type==="video"?`<video src="${p.data}" style="width:70px;height:55px;object-fit:cover;border-radius:6px" controls></video>`:`<img src="${p.data}" style="width:70px;height:55px;object-fit:cover;border-radius:6px;border:1px solid #e2e8f0">`}
+        ${p.comment?`<div style="font-size:9px;color:#64748b;max-width:70px">${p.comment}</div>`:""}
+      </div>`).join("")}
+    </div>`:"";
+  const casseHtml=panneauxCasses.length?`<div class="stitle">🔴 Panneaux cassés (${panneauxCasses.length})</div>
     ${panneauxCasses.map((c,i)=>`<div style="background:#fff5f5;border-radius:8px;padding:8px;margin-bottom:6px;font-size:12px">
       <strong>Panneau #${i+1}</strong>${c.comment?" — "+c.comment:""}
       <div style="display:flex;gap:6px;margin-top:4px">
@@ -340,38 +414,27 @@ function s3(){
         ${c.position?`<img src="${c.position}" style="width:70px;height:55px;object-fit:cover;border-radius:6px">`:""}
       </div>
     </div>`).join("")}`:"";
-
   return`<div class="card">
     <h2>4. Aperçu & Sauvegarde</h2>
     <div class="prev-hdr">
-      <div><div style="font-weight:800;font-size:14px">☀️ Cleanosolar</div><div style="font-size:10px;opacity:.75">Rapport d'intervention</div></div>
+      <div><div style="font-weight:800;font-size:14px">cleanosolar</div><div style="font-size:10px;opacity:.6;color:#3ECFB2">Rapport d'intervention</div></div>
       <div style="text-align:right;font-size:11px"><div style="font-weight:700">Réf. ${sel.id||"—"}</div><div>${R.date}</div></div>
     </div>
     <div class="prev-body">
-      <div style="font-weight:700;font-size:14px;color:#1e293b;margin-bottom:10px">${sel.nom}</div>
+      <div style="font-weight:700;font-size:14px;color:#1a1a1a;margin-bottom:10px">${sel.nom}</div>
       <div class="mgrid">
         <div><span style="color:#64748b">Surface :</span> <strong>${sel.m2} m²</strong></div>
         <div><span style="color:#64748b">Date :</span> <strong>${R.date}</strong></div>
         <div><span style="color:#64748b">Intervenants :</span> <strong>${R.intervenants}</strong></div>
         <div><span style="color:#64748b">Durée :</span> <strong>${R.duree}j</strong></div>
         <div><span style="color:#64748b">Produits :</span> <strong>${R.produits}</strong></div>
-        <div><span style="color:#64748b">Photos :</span> <strong>${totalPhotos}</strong></div>
+        <div><span style="color:#64748b">Photos :</span> <strong>${total}</strong></div>
       </div>
       ${R.observations?`<div class="stitle">📝 Observations</div><div class="sec">${R.observations}</div>`:""}
       ${R.taches?`<div class="stitle">🔧 Tâches</div><div class="sec">${R.taches}</div>`:""}
       ${R.difficultes?`<div class="stitle">⚠️ Difficultés</div><div class="sec">${R.difficultes}</div>`:""}
       ${R.recommandations?`<div class="stitle">💡 Recommandations</div><div class="sec">${R.recommandations}</div>`:""}
-      ${thumbsHtml}
-      ${photos.extra.length?`<div class="stitle">🎬 Médias supplémentaires</div>
-      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px">
-        ${photos.extra.map(p=>`<div style="text-align:center">
-          ${p.type==='video'
-            ?`<video src="${p.data}" style="width:70px;height:55px;object-fit:cover;border-radius:6px;border:1px solid #e2e8f0" controls></video>`
-            :`<img src="${p.data}" style="width:70px;height:55px;object-fit:cover;border-radius:6px;border:1px solid #e2e8f0">`}
-          ${p.comment?`<div style="font-size:9px;color:#64748b;max-width:70px">${p.comment}</div>`:""}
-        </div>`).join("")}
-      </div>`:""}
-      ${casseHtml}
+      ${thumbsHtml}${extraHtml}${casseHtml}
     </div>
     <button class="btn bl" onclick="printPDF()">🖨️ Exporter PDF</button>
     ${!saved
@@ -380,7 +443,7 @@ function s3(){
   </div>`;
 }
 
-// STEP 4 - Email
+// ---- Step 4 : Email ----
 function s4(){
   if(!emailBody)buildEmail();
   return`<div class="card">
@@ -398,14 +461,14 @@ function s4(){
   </div>`;
 }
 
+// ---- Notion save ----
 async function saveNotion(){
   if(sending)return;
   sending=true;showErr("");
   const btn=document.getElementById("btn-save");
   if(btn)btn.textContent="⏳ Envoi vers Notion...";
   try{
-    const blocks=buildBlocks();
-    const res=await notionCall("PATCH",`blocks/${sel.pageId}/children`,{children:blocks});
+    const res=await notionCall("PATCH",`blocks/${sel.pageId}/children`,{children:buildBlocks()});
     if(res.object==="error")throw new Error(res.message);
     saved=true;
     await notionCall("PATCH",`pages/${sel.pageId}`,{properties:{État:{status:{name:"Nettoyé"}}}});
@@ -432,15 +495,16 @@ function buildBlocks(){
   PHOTO_CATS.forEach(cat=>{
     if(photos[cat.k].length){
       b.push(h2(cat.l));
-      photos[cat.k].forEach((p,i)=>{
-        if(p.comment)b.push(t("Photo "+(i+1)+" : "+p.comment));
-        else b.push(t("Photo "+(i+1)));
-      });
+      photos[cat.k].forEach((p,i)=>b.push(t("Photo "+(i+1)+(p.comment?" : "+p.comment:""))));
     }
   });
+  if(photos.extra.length){
+    b.push(h2("Médias supplémentaires"));
+    photos.extra.forEach((p,i)=>b.push(t((p.type==="video"?"🎬":"📷")+" "+(i+1)+(p.comment?" : "+p.comment:""))));
+  }
   if(panneauxCasses.length){
     b.push(h2("🔴 Panneaux cassés ("+panneauxCasses.length+")"));
-    panneauxCasses.forEach((c,i)=>{b.push(t("Panneau #"+(i+1)+(c.comment?" — "+c.comment:"")));});
+    panneauxCasses.forEach((c,i)=>b.push(t("Panneau #"+(i+1)+(c.comment?" — "+c.comment:""))));
   }
   b.push(div());
   return b;
@@ -457,8 +521,7 @@ Nous vous faisons parvenir ci-joint le rapport d'intervention concernant le nett
 📐 Surface nettoyée : ${sel.m2} m²
 👷 Équipe : ${R.intervenants} intervenant(s) — Durée : ${R.duree} jour(s)
 🧴 Produits utilisés : ${R.produits}
-${R.observations?"\nObservations : "+R.observations:""}
-${R.recommandations?"\nRecommandations : "+R.recommandations:""}${casseNote}
+${R.observations?"\nObservations : "+R.observations:""}${R.recommandations?"\nRecommandations : "+R.recommandations:""}${casseNote}
 
 Le rapport complet avec photos est disponible en pièce jointe (PDF).
 
@@ -482,35 +545,35 @@ function copyMail(){
 }
 
 function printPDF(){
-  const totalPhotos=Object.values(photos).flat().length;
+  const total=Object.values(photos).flat().length;
   const photosHtml=PHOTO_CATS.filter(cat=>photos[cat.k].length>0).map(cat=>`
     <h2>${cat.l}</h2>
     <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px">
-      ${photos[cat.k].map((p,i)=>`<div style="text-align:center">
-        <img src="${p.data}" style="width:120px;height:90px;object-fit:cover;border-radius:6px;border:1px solid #e2e8f0">
-        ${p.comment?`<div style="font-size:9px;color:#64748b;max-width:120px;margin-top:2px">${p.comment}</div>`:""}
+      ${photos[cat.k].map(p=>`<div style="text-align:center">
+        <img src="${p.data}" style="width:130px;height:100px;object-fit:cover;border-radius:6px;border:1px solid #e2e8f0">
+        ${p.comment?`<div style="font-size:9px;color:#64748b;max-width:130px;margin-top:2px">${p.comment}</div>`:""}
       </div>`).join("")}
     </div>`).join("");
   const casseHtml=panneauxCasses.length?`<h2>🔴 Panneaux cassés</h2>${panneauxCasses.map((c,i)=>`
     <div style="background:#fff5f5;border-radius:8px;padding:10px;margin-bottom:8px;border:1px solid #fca5a5">
       <strong>Panneau #${i+1}</strong>${c.comment?" — "+c.comment:""}
       <div style="display:flex;gap:8px;margin-top:6px">
-        ${c.photo?`<div><img src="${c.photo}" style="width:120px;height:90px;object-fit:cover;border-radius:6px"><div style="font-size:9px;text-align:center;color:#64748b">Panneau</div></div>`:""}
-        ${c.position?`<div><img src="${c.position}" style="width:120px;height:90px;object-fit:cover;border-radius:6px"><div style="font-size:9px;text-align:center;color:#64748b">Position</div></div>`:""}
+        ${c.photo?`<div><img src="${c.photo}" style="width:130px;height:100px;object-fit:cover;border-radius:6px"><div style="font-size:9px;text-align:center;color:#64748b">Panneau</div></div>`:""}
+        ${c.position?`<div><img src="${c.position}" style="width:130px;height:100px;object-fit:cover;border-radius:6px"><div style="font-size:9px;text-align:center;color:#64748b">Position</div></div>`:""}
       </div>
     </div>`).join("")}`:"";
   const w=window.open("","_blank");
   w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Rapport – ${sel.nom}</title>
-  <style>body{font-family:Arial,sans-serif;padding:28px;color:#1e293b;font-size:13px}
-  .hdr{display:flex;justify-content:space-between;border-bottom:3px solid #1e3a5f;padding-bottom:14px;margin-bottom:18px}
-  .logo{font-size:20px;font-weight:800;color:#1e3a5f}.logo span{color:#2563eb}
-  .meta{display:grid;grid-template-columns:1fr 1fr;gap:5px 20px;background:#f8fafc;border-radius:8px;padding:12px;margin-bottom:14px;font-size:12px}
-  h2{font-size:12px;font-weight:700;color:#1e3a5f;border-left:3px solid #2563eb;padding-left:8px;margin:14px 0 6px}
+  <style>body{font-family:Arial,sans-serif;padding:28px;color:#1a1a1a;font-size:13px}
+  .hdr{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #3ECFB2;padding-bottom:14px;margin-bottom:18px}
+  .logo{font-size:22px;font-weight:900;color:#1a1a1a;letter-spacing:-0.5px}
+  .meta{display:grid;grid-template-columns:1fr 1fr;gap:5px 20px;background:#f0fdf9;border-radius:8px;padding:12px;margin-bottom:14px;font-size:12px;border:1px solid #3ECFB2}
+  h2{font-size:12px;font-weight:700;color:#1a1a1a;border-left:3px solid #3ECFB2;padding-left:8px;margin:14px 0 6px}
   .sec{background:#f8fafc;border-radius:6px;padding:9px 12px;font-size:12px;line-height:1.6;margin-bottom:8px}
   .footer{margin-top:24px;border-top:1px solid #e2e8f0;padding-top:10px;font-size:10px;color:#94a3b8;display:flex;justify-content:space-between}
   @media print{body{padding:16px}}</style></head><body>
   <div class="hdr">
-    <div><div class="logo">☀️ Cleano<span>solar</span></div><div style="font-size:10px;color:#64748b;margin-top:2px">Nettoyage professionnel de panneaux solaires</div></div>
+    <div><div class="logo">cleanosolar</div><div style="font-size:10px;color:#64748b;margin-top:2px">Nettoyage professionnel de panneaux solaires</div></div>
     <div style="text-align:right;font-size:11px"><div style="font-weight:700;font-size:13px">RAPPORT D'INTERVENTION</div><div>Réf. ${sel.id||"—"}</div><div>${R.date}</div></div>
   </div>
   <div style="font-weight:700;font-size:15px;margin-bottom:12px">${sel.nom}</div>
@@ -520,7 +583,7 @@ function printPDF(){
     <div><span style="color:#64748b">Intervenants :</span> <strong>${R.intervenants}</strong></div>
     <div><span style="color:#64748b">Durée :</span> <strong>${R.duree} jour(s)</strong></div>
     <div><span style="color:#64748b">Produits :</span> <strong>${R.produits}</strong></div>
-    <div><span style="color:#64748b">Photos :</span> <strong>${totalPhotos}</strong></div>
+    <div><span style="color:#64748b">Photos :</span> <strong>${total}</strong></div>
   </div>
   ${R.observations?`<h2>📝 Observations générales</h2><div class="sec">${R.observations}</div>`:""}
   ${R.taches?`<h2>🔧 Tâches significatives</h2><div class="sec">${R.taches}</div>`:""}
