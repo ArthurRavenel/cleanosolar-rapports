@@ -1,5 +1,5 @@
 exports.handler = async (event) => {
-  const NOTION_TOKEN = "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";
+  const NOTION_TOKEN = process.env.NOTION_TOKEN;
   const headers = {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Headers": "Content-Type",
