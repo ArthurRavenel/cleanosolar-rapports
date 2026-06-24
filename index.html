@@ -167,7 +167,14 @@ async function showChantier(pageId){
     if(nomProp&&nomProp.rich_text){
       for(const rt of nomProp.rich_text){
         if(rt.text&&rt.text.link&&rt.text.link.url){
-          const m2=rt.text.link.url.match(/\/p\/([a-f0-9]{32})/);
+          const u=rt.text.link.url;
+          // Format /p/ID ou /ID ou /ID?pvs=...
+          const m2=u.match(/\/p\/([a-f0-9]{32})/)||u.match(/\/([a-f0-9]{32})/);
+          if(m2)clientPageId=m2[1];
+        }
+        // Aussi dans href
+        if(!clientPageId&&rt.href){
+          const m2=rt.href.match(/\/p\/([a-f0-9]{32})/)||rt.href.match(/\/([a-f0-9]{32})/);
           if(m2)clientPageId=m2[1];
         }
       }
