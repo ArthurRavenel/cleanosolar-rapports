@@ -124,12 +124,18 @@ async function loadClients(){
     }
     clients=all.map(p=>{
       const props=p.properties;
-      const nom=props["Nom"]?.rich_text?.[0]?.plain_text||"Sans nom";
-      const email=props["Email"]?.email||"";
-      const m2=props["m2"]?.number||0;
-      const etat=props["État"]?.status?.name||"";
-      const dateVal=props["Date"]?.date?.start||"";
-      const id=props["Identifiant"]?.title?.[0]?.plain_text||"";
+      const nomProp=props["Nom"];
+      const nom=(nomProp&&nomProp.rich_text&&nomProp.rich_text.length>0)?nomProp.rich_text[0].plain_text:"Sans nom";
+      const emailProp=props["Email"];
+      const email=(emailProp&&emailProp.email)?emailProp.email:"";
+      const m2Prop=props["m2"];
+      const m2=(m2Prop&&m2Prop.number)?m2Prop.number:0;
+      const etatProp=props["État"];
+      const etat=(etatProp&&etatProp.status)?etatProp.status.name:"";
+      const dateProp=props["Date"];
+      const dateVal=(dateProp&&dateProp.date)?dateProp.date.start:"";
+      const idProp=props["Identifiant"];
+      const id=(idProp&&idProp.title&&idProp.title.length>0)?idProp.title[0].plain_text:"";
       return{url:p.url,pageId:p.id,nom,email,m2,etat,date:dateVal,id};
       return{url:p.url,pageId:p.id,nom,email,m2,etat,date:dateVal,id};
     }).filter(c=>INCLUDE.includes(c.etat));
