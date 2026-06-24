@@ -6,15 +6,15 @@
 <title>Cleanosolar — Rapport</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#eef2ff;min-height:100vh;padding:14px 10px;font-size:15px}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f0fdf9;min-height:100vh;padding:14px 10px;font-size:15px}
 .wrap{max-width:600px;margin:0 auto}
-.header{background:linear-gradient(135deg,#1e3a5f,#2563eb);border-radius:14px;padding:14px 18px;margin-bottom:14px;color:#fff;display:flex;align-items:center;gap:12px}
-.logo{font-size:17px;font-weight:800}.sub{font-size:11px;opacity:.75}
+.header{background:linear-gradient(135deg,#1a1a1a,#2a2a2a);border-radius:14px;padding:16px 20px;margin-bottom:14px;color:#fff;display:flex;align-items:center;gap:14px}
+.logo{font-size:17px;font-weight:800}.sub{font-size:11px;opacity:.6;color:#3ECFB2}
 .progress{display:flex;margin-bottom:14px;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.07)}
 .ps{flex:1;padding:8px 2px;text-align:center;font-size:10px;background:#f8fafc;color:#94a3b8;border-right:1px solid #e2e8f0}
 .ps:last-child{border-right:none}
-.ps.active{background:#2563eb;color:#fff;font-weight:700}
-.ps.done{background:#1e3a5f;color:#fff}
+.ps.active{background:#3ECFB2;color:#1a1a1a;font-weight:700}
+.ps.done{background:#1a1a1a;color:#3ECFB2}
 .card{background:#fff;border-radius:13px;padding:18px;box-shadow:0 1px 5px rgba(0,0,0,.08);margin-bottom:12px}
 h2{font-size:15px;color:#1e3a5f;margin-bottom:12px;font-weight:700}
 h3{font-size:13px;color:#1e3a5f;margin:14px 0 8px;font-weight:700;border-left:3px solid #2563eb;padding-left:8px}
@@ -24,8 +24,8 @@ textarea{resize:vertical;min-height:70px}
 .lbl{font-size:12px;font-weight:700;color:#374151;display:block;margin-bottom:4px;margin-top:12px}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .btn{border:none;border-radius:10px;padding:14px 18px;font-size:15px;font-weight:700;cursor:pointer;width:100%;font-family:inherit;margin-top:8px;-webkit-appearance:none;touch-action:manipulation}
-.bp{background:#2563eb;color:#fff}.bp:disabled{background:#bfdbfe}
-.bd{background:#1e3a5f;color:#fff}
+.bp{background:#3ECFB2;color:#1a1a1a}.bp:disabled{background:#a7f0e4;color:#fff}
+.bd{background:#1a1a1a;color:#fff}
 .bl{background:#f1f5f9;color:#1e293b;border:1.5px solid #e2e8f0}
 .bg{background:#22c55e;color:#fff}
 .err{background:#fee2e2;color:#dc2626;padding:10px 14px;border-radius:10px;margin-bottom:12px;font-size:13px;display:none}
@@ -33,11 +33,11 @@ textarea{resize:vertical;min-height:70px}
 .info{background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:10px 14px;font-size:12px;color:#1e40af;margin-top:10px;line-height:1.6}
 .warn{background:#fef9c3;border-radius:8px;padding:8px 12px;font-size:12px;color:#92400e;margin-top:10px}
 .loading{text-align:center;padding:40px 20px;color:#64748b;font-size:14px}
-.spinner{display:inline-block;width:28px;height:28px;border:3px solid #e2e8f0;border-top-color:#2563eb;border-radius:50%;animation:spin .8s linear infinite;margin-bottom:10px}
+.spinner{display:inline-block;width:28px;height:28px;border:3px solid #e2e8f0;border-top-color:#3ECFB2;border-radius:50%;animation:spin .8s linear infinite;margin-bottom:10px}
 @keyframes spin{to{transform:rotate(360deg)}}
 .ci{padding:12px 14px;border-radius:10px;border:1.5px solid #e8ecf0;background:#fafbfc;cursor:pointer;display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
-.ci.sel{border-color:#2563eb;background:#eff6ff}
-.ci-name{font-weight:600;font-size:14px;color:#1e293b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ci.sel{border-color:#3ECFB2;background:#f0fdf9}
+.ci-name{font-weight:600;font-size:14px;color:#1a1a1a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ci-sub{font-size:11px;color:#64748b;margin-top:2px}
 .badge{font-size:10px;padding:3px 8px;border-radius:20px;white-space:nowrap;margin-left:8px;flex-shrink:0;font-weight:600}
 .scroll{max-height:380px;overflow-y:auto;-webkit-overflow-scrolling:touch}
@@ -50,7 +50,7 @@ textarea{resize:vertical;min-height:70px}
 
 /* Photo sections */
 .photo-section{background:#f8fafc;border-radius:12px;padding:14px;margin-bottom:12px}
-.photo-section-title{font-size:13px;font-weight:700;color:#1e3a5f;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}
+.photo-section-title{font-size:13px;font-weight:700;color:#1a1a1a;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}
 .photo-grid{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px}
 .photo-item{position:relative;width:calc(33% - 6px)}
 .photo-item img{width:100%;height:80px;object-fit:cover;border-radius:8px;border:1px solid #e2e8f0}
@@ -71,8 +71,13 @@ textarea{resize:vertical;min-height:70px}
 <body>
 <div class="wrap">
   <div class="header">
-    <span style="font-size:30px">☀️</span>
-    <div><div class="logo">Cleanosolar</div><div class="sub">Rapport d'intervention 2026</div></div>
+    <svg width="36" height="36" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="50" cy="50" r="44" stroke="url(#g)" stroke-width="12" fill="none"/>
+      <defs><linearGradient id="g" x1="50" y1="6" x2="50" y2="94" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stop-color="#1a1a1a"/><stop offset="100%" stop-color="#3ECFB2"/>
+      </linearGradient></defs>
+    </svg>
+    <div><div class="logo" style="font-size:18px;font-weight:900;letter-spacing:-0.5px">cleanosolar</div><div class="sub">Rapport d'intervention 2026</div></div>
   </div>
   <div class="progress" id="prog"></div>
   <div class="err" id="err"></div>
