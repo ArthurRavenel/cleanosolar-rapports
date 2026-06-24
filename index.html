@@ -192,22 +192,13 @@ async function showChantier(pageId){
       if(!ch||!ch.results)return[];
       let texts=[];
       for(const b of ch.results){
-        if(b.type==="callout"){
-          const t=b.callout.rich_text.map(r=>r.plain_text).join("").trim();
-          if(t)texts.push(t);
-        }
-        else if(b.type==="paragraph"){
-          const t=b.paragraph.rich_text.map(r=>r.plain_text).join("").trim();
-          if(t)texts.push(t);
-        }
-        else if(b.type==="bulleted_list_item"){
-          const t=b.bulleted_list_item.rich_text.map(r=>r.plain_text).join("").trim();
-          if(t)texts.push("• "+t);
-        }
-        else if(b.type==="heading_3"){
-          const t=b.heading_3.rich_text.map(r=>r.plain_text).join("").trim();
-          if(t)texts.push("— "+t+" —");
-        }
+        // Extrait le texte direct du bloc
+        let txt="";
+        if(b.type==="callout") txt=b.callout.rich_text.map(r=>r.plain_text).join("").trim();
+        else if(b.type==="paragraph") txt=b.paragraph.rich_text.map(r=>r.plain_text).join("").trim();
+        else if(b.type==="bulleted_list_item") txt="• "+b.bulleted_list_item.rich_text.map(r=>r.plain_text).join("").trim();
+        else if(b.type==="heading_3") txt="— "+b.heading_3.rich_text.map(r=>r.plain_text).join("").trim()+" —";
+        if(txt&&txt!=="• "&&txt!=="—  —")texts.push(txt);
         // Toujours récursif si has_children
         if(b.has_children){
           const sub=await getChildTexts(b.id);
