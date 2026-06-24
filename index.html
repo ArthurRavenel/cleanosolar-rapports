@@ -1,4 +1,90 @@
-<!DOCTYPE html>
+async function showChantier(pageId){
+  const client=clients.find(c=>c.pageId===pageId)||{nom:"",pageId};
+  openModal(`<div style="text-align:center;padding:30px"><div class="spinner"></div><br>Chargement...</div>`);
+  try{
+    // Récupère le lien client depuis le champ Nom
+    const page=await notionCall("GET",`pages/${pageId}`);
+    const nomProp=page.properties&&page.properties["Nom"];
+    let clientPageId=null, clientPageUrl=null;
+    if(nomProp&&nomProp.rich_text){
+      for(const rt of nomProp.rich_text){
+        let u=rt.href||(rt.text&&rt.text.link&&rt.text.link.url)||null;
+        if(u){
+          const m=u.replace(/-/g,"").match(/([a-f0-9]{32})/);
+          if(m){clientPageId=m[1];clientPageUrl=`https://www.notion.so/${m[1]}`;}
+        }
+      }
+    }
+
+    // Récupère les infos depuis la page client
+    let infosGen=[], miseEnPlace=[], adresse="", mapsUrl="";
+    if(clientPageId){
+      const blocks=await notionCall("GET",`blocks/${clientPageId}/children?page_size=100`);
+      if(blocks&&blocks.results){
+        for(const b of blocks.results){
+          const t=b.type;
+          const htxt=t==="heading_2"?b.heading_2.rich_text.map(r=>r.plain_text).join("").toLowerCase():"";
+
+          // Infos générales dans les colonnes
+          if(t==="column_list"){
+            // Charge les colonnes
+            const cols=await notionCall("GET",`blocks/${b.id}/children?page_size=20`);
+            if(cols&&cols.results){
+              for(const col of cols.results){
+                // Charge les callouts dans chaque colonne
+                const callouts=await notionCall("GET",`blocks/${col.id}/children?page_size=20`);
+                if(callouts&&callouts.results){
+                  for(const ca of callouts.results){
+                    // Texte direct du callout
+                    const ctxt=ca.callout?.rich_text?.map(r=>r.plain_text).join("").trim()||"";
+                    if(ctxt)infosGen.push(ctxt);
+                    // Enfants du callout (listes à puces)
+                    const items=await notionCall("GET",`blocks/${ca.id}/children?page_size=20`);
+                    if(items&&items.results){
+                      for(const it of items.results){
+                        const itxt=it.bulleted_list_item?.rich_text?.map(r=>r.plain_text).join("").trim()
+                          ||it.paragraph?.rich_text?.map(r=>r.plain_text).join("").trim()||"";
+                        if(itxt)infosGen.push(itxt);
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+
+          // Toggle Adresse
+          if(t==="heading_2"&&htxt.includes("adresse")){
+            const ch=await notionCall("GET",`blocks/${b.id}/children?page_size=20`);
+            if(ch&&ch.results){
+              for(const c of ch.results){
+                if(c.type==="paragraph"){const tx=c.paragraph.rich_text.map(r=>r.plain_text).join("").trim();if(tx)adresse+=tx+" ";}
+                if(c.type==="embed"||c.type==="bookmark"){const u=c[c.type]?.url;if(u)mapsUrl=u;}
+                if(c.type==="link_preview"){const u=c.link_preview?.url;if(u)mapsUrl=u;}
+              }
+            }
+          }
+
+          // Toggle Mise en place
+          if(t==="heading_2"&&htxt.includes("mise en place")){
+            const ch=await notionCall("GET",`blocks/${b.id}/children?page_size=50`);
+            if(ch&&ch.results){
+              for(const c of ch.results){
+                const ctxt=c.bulleted_list_item?.rich_text?.map(r=>r.plain_text).join("").trim()
+                  ||c.paragraph?.rich_text?.map(r=>r.plain_text).join("").trim()
+                  ||c.heading_3?.rich_text?.map(r=>r.plain_text).join("").trim()||"";
+                if(ctxt)miseEnPlace.push(ctxt);
+              }
+            }
+          }
+        }
+      }
+    }
+
+    adresse=adresse.trim();
+    const dest=encodeURIComponent(adresse||client.nom);
+    const gmaps=mapsUrl||`https://www.google.com/maps/search/?api=1&query=${dest}`;
+    const gsat=`https://www.google.com/maps/search/?api=1&q<!DOCTYPE html>
 <html lang="fr">
 <head>
 <meta charset="utf-8">
