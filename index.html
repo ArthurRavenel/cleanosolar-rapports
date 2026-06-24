@@ -17,9 +17,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .ps.done{background:#1e3a5f;color:#fff}
 .card{background:#fff;border-radius:13px;padding:18px;box-shadow:0 1px 5px rgba(0,0,0,.08);margin-bottom:12px}
 h2{font-size:15px;color:#1e3a5f;margin-bottom:12px;font-weight:700}
+h3{font-size:13px;color:#1e3a5f;margin:14px 0 8px;font-weight:700;border-left:3px solid #2563eb;padding-left:8px}
 input,textarea{width:100%;border:1.5px solid #e2e8f0;border-radius:8px;padding:10px 12px;font-size:15px;font-family:inherit;outline:none;background:#fff;-webkit-appearance:none}
 input:focus,textarea:focus{border-color:#2563eb}
-textarea{resize:vertical;min-height:80px}
+textarea{resize:vertical;min-height:70px}
 .lbl{font-size:12px;font-weight:700;color:#374151;display:block;margin-bottom:4px;margin-top:12px}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .btn{border:none;border-radius:10px;padding:14px 18px;font-size:15px;font-weight:700;cursor:pointer;width:100%;font-family:inherit;margin-top:8px;-webkit-appearance:none;touch-action:manipulation}
@@ -40,19 +41,31 @@ textarea{resize:vertical;min-height:80px}
 .ci-sub{font-size:11px;color:#64748b;margin-top:2px}
 .badge{font-size:10px;padding:3px 8px;border-radius:20px;white-space:nowrap;margin-left:8px;flex-shrink:0;font-weight:600}
 .scroll{max-height:380px;overflow-y:auto;-webkit-overflow-scrolling:touch}
-.pgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px}
-.pbox{border:2px dashed #cbd5e1;border-radius:10px;overflow:hidden;text-align:center;background:#f8fafc;cursor:pointer;min-height:90px;display:flex;flex-direction:column;align-items:center;justify-content:center}
-.pbox.got{border-color:#22c55e;background:#f0fdf4}
-.pbox input{display:none}
-.pbox img{width:100%;height:65px;object-fit:cover}
-.plbl{font-size:9px;color:#94a3b8;padding:3px 4px}
-.plbl.ok{color:#16a34a;font-weight:700}
 .nav{display:flex;gap:10px;margin-top:12px}
 .prev-hdr{background:linear-gradient(135deg,#1e3a5f,#2563eb);padding:13px 16px;color:#fff;border-radius:11px 11px 0 0;display:flex;justify-content:space-between}
 .prev-body{border:1.5px solid #e2e8f0;border-top:none;border-radius:0 0 11px 11px;padding:14px 16px;margin-bottom:12px;font-size:13px}
 .mgrid{display:grid;grid-template-columns:1fr 1fr;gap:5px 14px;background:#f8fafc;border-radius:8px;padding:11px;margin-bottom:11px}
 .sec{background:#f8fafc;border-radius:6px;padding:8px 10px;line-height:1.5;font-size:13px;margin-bottom:8px}
 .stitle{font-weight:700;color:#1e3a5f;font-size:11px;margin-bottom:3px;margin-top:8px}
+
+/* Photo sections */
+.photo-section{background:#f8fafc;border-radius:12px;padding:14px;margin-bottom:12px}
+.photo-section-title{font-size:13px;font-weight:700;color:#1e3a5f;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}
+.photo-grid{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px}
+.photo-item{position:relative;width:calc(33% - 6px)}
+.photo-item img{width:100%;height:80px;object-fit:cover;border-radius:8px;border:1px solid #e2e8f0}
+.photo-item .del-btn{position:absolute;top:3px;right:3px;background:rgba(220,38,38,0.85);color:#fff;border:none;border-radius:50%;width:22px;height:22px;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1}
+.photo-item .photo-comment{margin-top:4px;font-size:11px;width:100%;border:1px solid #e2e8f0;border-radius:6px;padding:4px 6px;background:#fff}
+.add-photo-btn{display:flex;align-items:center;justify-content:center;gap:6px;background:#fff;border:2px dashed #cbd5e1;border-radius:10px;padding:10px;cursor:pointer;font-size:13px;color:#64748b;width:100%;margin-top:4px}
+.add-photo-btn input{display:none}
+
+/* Panneaux cassés */
+.casse-item{background:#fff;border:1.5px solid #fca5a5;border-radius:10px;padding:12px;margin-bottom:10px}
+.casse-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.casse-photo-box{border:2px dashed #fca5a5;border-radius:8px;overflow:hidden;text-align:center;cursor:pointer;min-height:80px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#fff5f5}
+.casse-photo-box.has{border-color:#22c55e;background:#f0fdf4}
+.casse-photo-box input{display:none}
+.casse-photo-box img{width:100%;height:75px;object-fit:cover}
 </style>
 </head>
 <body>
@@ -66,103 +79,85 @@ textarea{resize:vertical;min-height:80px}
   <div id="main"></div>
   <div class="nav" id="nav"></div>
 </div>
-
 <script>
-const DB_ID = "1d16b0e7fbc9808594e6f4e2dfd4a4e4";
-const API = "/.netlify/functions/notion";
-
-async function notionCall(method, path, body){
-  const res = await fetch(API, {
-    method: "POST",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify({method, path, body})
-  });
-  return res.json();
-}
-const INCLUDE = ["Planifier confirmé - Team 1","Planifier confirmé - Team 2"];
-
-const PHOTOS=[
-  {k:"toit",l:"🏠 Toit"},{k:"avant",l:"🔴 Avant"},{k:"apres",l:"✅ Après"},
-  {k:"tache1",l:"🔧 Tâche 1"},{k:"tache2",l:"🔧 Tâche 2"},
-  {k:"eau1",l:"💧 Eau 1"},{k:"eau2",l:"💧 Eau 2"},
-  {k:"acces1",l:"🪜 Accès 1"},{k:"acces2",l:"🪜 Accès 2"},
-];
-
-const EC={
-  "Nettoyé":"#dbeafe:#1d4ed8",
-  "Planifier confirmé - Team 1":"#ffedd5:#c2410c",
-  "Planifier confirmé - Team 2":"#fce7f3:#be185d",
-  "Planifié - non confirmé - Team 1":"#f3f4f6:#6b7280",
-  "Planifié - non confirmé - Team 2":"#f3f4f6:#6b7280",
-  "Transmis à l'équipe d'intervention":"#ede9fe:#7c3aed"
-};
-const ec=e=>{const c=(EC[e]||"#f3f4f6:#6b7280").split(":");return{bg:c[0],col:c[1]};};
+const DB_ID="1d16b0e7fbc9808594e6f4e2dfd4a4e4";
+const API="/.netlify/functions/notion";
+const INCLUDE=["Planifier confirmé - Team 1","Planifier confirmé - Team 2"];
 const STEPS=["Client","Photos","Rapport","Aperçu","Email"];
 const today=new Date().toISOString().split("T")[0];
 
-let step=0, sel=null, photos={}, saved=false, sending=false;
-let q="", emailObj="", emailBody="";
-let clients=[], loadingClients=false;
-let R={date:today,intervenants:"2",duree:"0.5",produits:"Eau pure",observations:"",taches:"",difficultes:"RAS",recommandations:""};
+async function notionCall(method,path,body){
+  const res=await fetch(API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({method,path,body})});
+  return res.json();
+}
+
+const EC={"Planifier confirmé - Team 1":"#ffedd5:#c2410c","Planifier confirmé - Team 2":"#fce7f3:#be185d"};
+const ec=e=>{const c=(EC[e]||"#f3f4f6:#6b7280").split(":");return{bg:c[0],col:c[1]};};
+
+let step=0,sel=null,saved=false,sending=false,q="",emailObj="",emailBody="";
+let clients=[],loadingClients=false;
+let R={date:today,intervenants:"2",duree:"0.5",produits:"Eau pure",observations:"",taches:"",difficultes:"",recommandations:""};
+
+// Photos: {toit:[], avant:[], apres:[], tache:[], eau:[], acces:[]}
+let photos={toit:[],avant:[],apres:[],tache:[],eau:[],acces:[],extra:[]};
+// Panneaux cassés: [{photo_panneau, photo_position, commentaire}]
+let panneauxCasses=[];
+
+const PHOTO_CATS=[
+  {k:"toit",l:"🏠 Photos générales du toit",multi:true},
+  {k:"avant",l:"🔴 Panneaux Avant nettoyage",multi:true},
+  {k:"apres",l:"✅ Panneaux Après nettoyage",multi:true},
+  {k:"tache",l:"🔧 Tâches significatives",multi:true},
+  {k:"eau",l:"💧 Point d'eau",multi:true},
+  {k:"acces",l:"🪜 Accès toiture",multi:true},
+];
 
 function showErr(m){const e=document.getElementById("err");e.textContent=m;e.style.display=m?"block":"none";}
 
-// Load clients from Notion DB
+function toDataURL(file){return new Promise((res,rej)=>{const r=new FileReader();r.onload=e=>res(e.target.result);r.onerror=rej;r.readAsDataURL(file);});}
+
 async function loadClients(){
-  loadingClients=true;
-  render();
+  loadingClients=true;render();
   try{
-    let all=[], cursor=undefined, hasMore=true;
+    let all=[],cursor,hasMore=true;
     while(hasMore){
       const body={page_size:100,filter:{or:INCLUDE.map(s=>({property:"État",status:{equals:s}}))}};
-      if(cursor) body.start_cursor=cursor;
+      if(cursor)body.start_cursor=cursor;
       const data=await notionCall("POST",`databases/${DB_ID}/query`,body);
-      if(data.object==="error") throw new Error(data.message||"Erreur Notion");
+      if(data.object==="error")throw new Error(data.message);
       all=all.concat(data.results);
-      hasMore=data.has_more;
-      cursor=data.next_cursor;
+      hasMore=data.has_more;cursor=data.next_cursor;
     }
     clients=all.map(p=>{
       const props=p.properties;
       const nomProp=props["Nom"];
       const nom=(nomProp&&nomProp.rich_text&&nomProp.rich_text.length>0)?nomProp.rich_text[0].plain_text:"Sans nom";
-      const emailProp=props["Email"];
-      const email=(emailProp&&emailProp.email)?emailProp.email:"";
-      const m2Prop=props["m2"];
-      const m2=(m2Prop&&m2Prop.number)?m2Prop.number:0;
-      const etatProp=props["État"];
-      const etat=(etatProp&&etatProp.status)?etatProp.status.name:"";
-      const dateProp=props["Date"];
-      const dateVal=(dateProp&&dateProp.date)?dateProp.date.start:"";
-      const idProp=props["Identifiant"];
-      const id=(idProp&&idProp.title&&idProp.title.length>0)?idProp.title[0].plain_text:"";
+      const email=(props["Email"]&&props["Email"].email)?props["Email"].email:"";
+      const m2=(props["m2"]&&props["m2"].number)?props["m2"].number:0;
+      const etat=(props["État"]&&props["État"].status)?props["État"].status.name:"";
+      const dateVal=(props["Date"]&&props["Date"].date)?props["Date"].date.start:"";
+      const id=(props["Identifiant"]&&props["Identifiant"].title&&props["Identifiant"].title.length>0)?props["Identifiant"].title[0].plain_text:"";
       return{url:p.url,pageId:p.id,nom,email,m2,etat,date:dateVal,id};
-      return{url:p.url,pageId:p.id,nom,email,m2,etat,date:dateVal,id};
-    }).filter(c=>INCLUDE.includes(c.etat));
-    clients.sort((a,b)=>{
-      if(!a.date) return 1;
-      if(!b.date) return -1;
-      return a.date < b.date ? -1 : a.date > b.date ? 1 : 0;
     });
+    clients.sort((a,b)=>{if(!a.date)return 1;if(!b.date)return -1;return a.date<b.date?-1:1;});
   }catch(e){showErr("Erreur chargement Notion: "+e.message);}
-  loadingClients=false;
-  render();
+  loadingClients=false;render();
 }
 
 function render(){
   document.getElementById("prog").innerHTML=STEPS.map((l,i)=>`<div class="ps ${i===step?"active":i<step?"done":""}">${i<step?"✓ ":""}${l}</div>`).join("");
   const el=document.getElementById("main");
-  if(step===0) el.innerHTML=s0();
-  else if(step===1) el.innerHTML=s1();
-  else if(step===2) el.innerHTML=s2();
-  else if(step===3) el.innerHTML=s3();
+  if(step===0)el.innerHTML=s0();
+  else if(step===1)el.innerHTML=s1();
+  else if(step===2)el.innerHTML=s2();
+  else if(step===3)el.innerHTML=s3();
   else el.innerHTML=s4();
   document.getElementById("nav").innerHTML=nav();
 }
 
 function nav(){
   let h="";
-  if(step>0) h+=`<button class="btn bl" style="flex:1" onclick="go(step-1)">← Retour</button>`;
+  if(step>0)h+=`<button class="btn bl" style="flex:1" onclick="go(step-1)">← Retour</button>`;
   if(step<4){
     const ok=canNext();
     const lbl=step===3&&!saved?"Sauvegarder d'abord ↑":"Suivant →";
@@ -172,61 +167,133 @@ function nav(){
 }
 
 function canNext(){
-  if(step===0) return!!sel;
-  if(step===2) return!!(R.date&&R.observations);
-  if(step===3) return saved;
+  if(step===0)return!!sel;
+  if(step===3)return saved;
   return true;
 }
 
 function go(n){showErr("");step=n;render();}
 
+// STEP 0 - Client
 function s0(){
-  if(loadingClients) return`<div class="card"><div class="loading"><div class="spinner"></div><br>Chargement depuis Notion...</div></div>`;
-  if(!clients.length&&!loadingClients) return`<div class="card"><h2>1. Sélectionner l'intervention</h2><button class="btn bp" onclick="loadClients()">🔗 Charger les interventions</button></div>`;
+  if(loadingClients)return`<div class="card"><div class="loading"><div class="spinner"></div><br>Chargement depuis Notion...</div></div>`;
+  if(!clients.length)return`<div class="card"><h2>1. Sélectionner l'intervention</h2><button class="btn bp" onclick="loadClients()">🔗 Charger les interventions</button></div>`;
   const list=clients.filter(c=>!q||(c.nom+c.id).toLowerCase().includes(q.toLowerCase()));
   return`<div class="card">
     <h2>1. Sélectionner l'intervention</h2>
     <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
-      <input placeholder="🔍 Nom ou référence..." value="${q}" oninput="q=this.value;renderMain()" style="flex:1">
+      <input placeholder="🔍 Nom ou référence..." value="${q}" oninput="q=this.value;renderS0()" style="flex:1">
       <button onclick="loadClients()" style="background:#f1f5f9;border:1.5px solid #e2e8f0;border-radius:8px;padding:10px 12px;cursor:pointer;font-size:16px;flex-shrink:0">🔄</button>
     </div>
-    <div style="font-size:11px;color:#94a3b8;margin-bottom:8px">${list.length} intervention(s) — <span style="color:#22c55e">🟢 live · actualisation auto 30s</span></div>
-    <div class="scroll">${list.map(c=>{
-      const{bg,col}=ec(c.etat);
-      return`<div class="ci${sel&&sel.pageId===c.pageId?" sel":""}" onclick="setSel('${c.pageId}')">
-        <div style="flex:1;min-width:0">
-          <div class="ci-name">${c.nom}</div>
-          <div class="ci-sub">${c.id?" #"+c.id+" · ":""}${c.date} · ${c.m2} m²</div>
-        </div>
-        <span class="badge" style="background:${bg};color:${col}">${c.etat}</span>
-      </div>`;}).join("")||`<div style="text-align:center;padding:20px;color:#94a3b8;font-size:13px">Aucune intervention active trouvée</div>`}
+    <div style="font-size:11px;color:#94a3b8;margin-bottom:8px">${list.length} intervention(s) — <span style="color:#22c55e">🟢 live</span></div>
+    <div class="scroll">${list.map(c=>{const{bg,col}=ec(c.etat);return`<div class="ci${sel&&sel.pageId===c.pageId?" sel":""}" onclick="setSel('${c.pageId}')">
+      <div style="flex:1;min-width:0"><div class="ci-name">${c.nom}</div><div class="ci-sub">${c.id?" #"+c.id+" · ":""}${c.date} · ${c.m2} m²</div></div>
+      <span class="badge" style="background:${bg};color:${col}">${c.etat}</span>
+    </div>`;}).join("")||`<div style="text-align:center;padding:20px;color:#94a3b8">Aucune intervention trouvée</div>`}
     </div>
     ${sel?`<div class="info">✓ Sélectionné : <strong>${sel.nom}</strong></div>`:""}
   </div>`;
 }
-
-function renderMain(){const el=document.getElementById("main");el.innerHTML=s0();}
+function renderS0(){document.getElementById("main").innerHTML=s0();}
 function setSel(id){sel=clients.find(c=>c.pageId===id);render();}
 
+// STEP 1 - Photos
 function s1(){
-  return`<div class="card">
-    <h2>2. Photos d'intervention</h2>
-    <p style="font-size:12px;color:#64748b;margin-bottom:12px"><strong>${sel.nom}</strong> · ${sel.m2} m²</p>
-    <div class="pgrid">${PHOTOS.map(s=>{const p=photos[s.k];return`<label class="pbox${p?" got":""}">
-      <input type="file" accept="image/*" onchange="addPhoto('${s.k}',this)">
-      ${p?`<img src="${p.url}"><div class="plbl ok">✓ ${s.l}</div>`:`<div style="font-size:20px;padding-top:8px">📷</div><div class="plbl">${s.l}</div>`}
-    </label>`;}).join("")}</div>
-    <div class="warn">${Object.keys(photos).length}/${PHOTOS.length} photos · L'appareil photo s'ouvre directement</div>
+  let html=`<div class="card"><h2>2. Photos d'intervention</h2><p style="font-size:12px;color:#64748b;margin-bottom:14px"><strong>${sel.nom}</strong> · ${sel.m2} m²</p>`;
+
+  // Catégories photos
+  PHOTO_CATS.forEach(cat=>{
+    html+=`<div class="photo-section">
+      <div class="photo-section-title"><span>${cat.l}</span><span style="font-size:11px;color:#94a3b8">${photos[cat.k].length} photo(s)</span></div>
+      <div class="photo-grid" id="grid-${cat.k}">
+        ${photos[cat.k].map((p,i)=>`<div class="photo-item">
+          <img src="${p.data}">
+          <button class="del-btn" onclick="delPhoto('${cat.k}',${i})">×</button>
+          <input class="photo-comment" placeholder="Commentaire..." value="${p.comment||""}" oninput="setComment('${cat.k}',${i},this.value)">
+        </div>`).join("")}
+      </div>
+      <label class="add-photo-btn">
+        <input type="file" accept="image/*" multiple onchange="addPhotos('${cat.k}',this)">
+        📷 Ajouter photo(s)
+      </label>
+    </div>`;
+  });
+
+  // Médias supplémentaires
+  html+=`<div class="photo-section" style="border:1.5px solid #c4b5fd">
+    <div class="photo-section-title"><span>🎬 Médias supplémentaires <span style="font-size:10px;color:#94a3b8;font-weight:400">(optionnel)</span></span><span style="font-size:11px;color:#94a3b8">${photos.extra.length} fichier(s)</span></div>
+    <div class="photo-grid">
+      ${photos.extra.map((p,i)=>`<div class="photo-item">
+        ${p.type==='video'
+          ?`<video src="${p.data}" style="width:100%;height:80px;object-fit:cover;border-radius:8px;border:1px solid #e2e8f0" controls></video>`
+          :`<img src="${p.data}" style="width:100%;height:80px;object-fit:cover;border-radius:8px;border:1px solid #e2e8f0">`}
+        <button class="del-btn" onclick="delExtra(${i})">×</button>
+        <input class="photo-comment" placeholder="Commentaire..." value="${p.comment||""}" oninput="setExtraComment(${i},this.value)">
+      </div>`).join("")}
+    </div>
+    <label class="add-photo-btn">
+      <input type="file" accept="image/*,video/*" multiple onchange="addExtra(this)">
+      📎 Ajouter photo(s) ou vidéo(s)
+    </label>
   </div>`;
+
+  // Panneaux cassés
+  html+=`<div class="photo-section" style="border:1.5px solid #fca5a5">
+    <div class="photo-section-title"><span>🔴 Panneaux cassés</span><button onclick="addCasse()" style="background:#fee2e2;color:#dc2626;border:none;border-radius:8px;padding:4px 10px;font-size:12px;font-weight:700;cursor:pointer">+ Ajouter</button></div>
+    <div id="casse-list">
+      ${panneauxCasses.map((c,i)=>`<div class="casse-item">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <strong style="font-size:12px;color:#dc2626">Panneau cassé #${i+1}</strong>
+          <button onclick="delCasse(${i})" style="background:none;border:none;color:#dc2626;font-size:18px;cursor:pointer">×</button>
+        </div>
+        <div class="casse-grid">
+          <label class="casse-photo-box${c.photo?'has':''}">
+            <input type="file" accept="image/*" onchange="setCassePhoto(${i},'photo',this)">
+            ${c.photo?`<img src="${c.photo}">`:`<div style="font-size:18px">📷</div><div style="font-size:10px;color:#94a3b8">Photo panneau</div>`}
+          </label>
+          <label class="casse-photo-box${c.position?'has':''}">
+            <input type="file" accept="image/*" onchange="setCassePhoto(${i},'position',this)">
+            ${c.position?`<img src="${c.position}">`:`<div style="font-size:18px">📍</div><div style="font-size:10px;color:#94a3b8">Position</div>`}
+          </label>
+        </div>
+        <input placeholder="Description du dommage..." value="${c.comment||""}" oninput="setCasseComment(${i},this.value)" style="font-size:13px">
+      </div>`).join("")||`<div style="font-size:12px;color:#94a3b8;text-align:center;padding:10px">Aucun panneau cassé signalé</div>`}
+    </div>
+  </div>`;
+
+  html+=`<div class="warn">${Object.values(photos).flat().length} photo(s) · ${panneauxCasses.length} panneau(x) cassé(s)</div></div>`;
+  return html;
 }
 
-function addPhoto(key,input){
-  const file=input.files[0];if(!file)return;
-  const reader=new FileReader();
-  reader.onload=e=>{photos[key]={url:e.target.result,name:file.name,data:e.target.result};render();};
-  reader.readAsDataURL(file);
+async function addPhotos(key,input){
+  const files=Array.from(input.files);
+  for(const f of files){const data=await toDataURL(f);photos[key].push({data,name:f.name,comment:""});}
+  render();
 }
+function delPhoto(key,i){photos[key].splice(i,1);render();}
+function setComment(key,i,v){photos[key][i].comment=v;}
 
+async function addExtra(input){
+  const files=Array.from(input.files);
+  for(const f of files){
+    const data=await toDataURL(f);
+    const type=f.type.startsWith('video')?'video':'image';
+    photos.extra.push({data,name:f.name,type,comment:""});
+  }
+  render();
+}
+function delExtra(i){photos.extra.splice(i,1);render();}
+function setExtraComment(i,v){photos.extra[i].comment=v;}
+
+function addCasse(){panneauxCasses.push({photo:"",position:"",comment:""});render();}
+function delCasse(i){panneauxCasses.splice(i,1);render();}
+async function setCassePhoto(i,field,input){
+  const f=input.files[0];if(!f)return;
+  const data=await toDataURL(f);panneauxCasses[i][field]=data;render();
+}
+function setCasseComment(i,v){panneauxCasses[i].comment=v;}
+
+// STEP 2 - Rapport
 function s2(){
   return`<div class="card">
     <h2>3. Informations du rapport</h2>
@@ -236,22 +303,39 @@ function s2(){
       <div><label class="lbl">⏱ Durée (jours)</label><input type="number" step="0.5" value="${R.duree}" oninput="R.duree=this.value"></div>
       <div><label class="lbl">🧴 Produits</label><input type="text" value="${R.produits}" oninput="R.produits=this.value"></div>
     </div>
-    <label class="lbl">📝 Observations générales *</label>
+    <label class="lbl">📝 Observations générales</label>
     <textarea oninput="R.observations=this.value" placeholder="État général, type de saleté...">${R.observations}</textarea>
     <label class="lbl">🔧 Tâches significatives</label>
     <textarea oninput="R.taches=this.value" placeholder="Travaux particuliers...">${R.taches}</textarea>
     <label class="lbl">⚠️ Difficultés rencontrées</label>
-    <textarea rows="2" oninput="R.difficultes=this.value">${R.difficultes}</textarea>
+    <textarea rows="2" oninput="R.difficultes=this.value" placeholder="RAS ou description...">${R.difficultes}</textarea>
     <label class="lbl">💡 Recommandations</label>
     <textarea oninput="R.recommandations=this.value" placeholder="Pour la prochaine intervention...">${R.recommandations}</textarea>
   </div>`;
 }
 
+// STEP 3 - Aperçu
 function s3(){
-  const thumbs=Object.entries(photos).map(([k,v])=>`<div style="text-align:center;display:inline-block;margin:3px">
-    <img src="${v.data}" style="width:65px;height:50px;object-fit:cover;border-radius:6px;border:1px solid #e2e8f0">
-    <div style="font-size:9px;color:#64748b;margin-top:2px">${PHOTOS.find(s=>s.k===k)?.l||k}</div>
-  </div>`).join("");
+  const totalPhotos=Object.values(photos).flat().length;
+  const thumbsHtml=PHOTO_CATS.filter(cat=>photos[cat.k].length>0).map(cat=>`
+    <div class="stitle">${cat.l}</div>
+    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px">
+      ${photos[cat.k].map(p=>`<div style="text-align:center">
+        <img src="${p.data}" style="width:70px;height:55px;object-fit:cover;border-radius:6px;border:1px solid #e2e8f0">
+        ${p.comment?`<div style="font-size:9px;color:#64748b;max-width:70px">${p.comment}</div>`:""}
+      </div>`).join("")}
+    </div>`).join("");
+
+  const casseHtml=panneauxCasses.length?`
+    <div class="stitle">🔴 Panneaux cassés (${panneauxCasses.length})</div>
+    ${panneauxCasses.map((c,i)=>`<div style="background:#fff5f5;border-radius:8px;padding:8px;margin-bottom:6px;font-size:12px">
+      <strong>Panneau #${i+1}</strong>${c.comment?" — "+c.comment:""}
+      <div style="display:flex;gap:6px;margin-top:4px">
+        ${c.photo?`<img src="${c.photo}" style="width:70px;height:55px;object-fit:cover;border-radius:6px">`:""}
+        ${c.position?`<img src="${c.position}" style="width:70px;height:55px;object-fit:cover;border-radius:6px">`:""}
+      </div>
+    </div>`).join("")}`:"";
+
   return`<div class="card">
     <h2>4. Aperçu & Sauvegarde</h2>
     <div class="prev-hdr">
@@ -266,13 +350,23 @@ function s3(){
         <div><span style="color:#64748b">Intervenants :</span> <strong>${R.intervenants}</strong></div>
         <div><span style="color:#64748b">Durée :</span> <strong>${R.duree}j</strong></div>
         <div><span style="color:#64748b">Produits :</span> <strong>${R.produits}</strong></div>
-        <div><span style="color:#64748b">Photos :</span> <strong>${Object.keys(photos).length}</strong></div>
+        <div><span style="color:#64748b">Photos :</span> <strong>${totalPhotos}</strong></div>
       </div>
       ${R.observations?`<div class="stitle">📝 Observations</div><div class="sec">${R.observations}</div>`:""}
       ${R.taches?`<div class="stitle">🔧 Tâches</div><div class="sec">${R.taches}</div>`:""}
-      ${R.difficultes&&R.difficultes!=="RAS"?`<div class="stitle">⚠️ Difficultés</div><div class="sec">${R.difficultes}</div>`:""}
+      ${R.difficultes?`<div class="stitle">⚠️ Difficultés</div><div class="sec">${R.difficultes}</div>`:""}
       ${R.recommandations?`<div class="stitle">💡 Recommandations</div><div class="sec">${R.recommandations}</div>`:""}
-      ${Object.keys(photos).length?`<div class="stitle">📷 Photos (${Object.keys(photos).length})</div><div style="margin-top:4px">${thumbs}</div>`:""}
+      ${thumbsHtml}
+      ${photos.extra.length?`<div class="stitle">🎬 Médias supplémentaires</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px">
+        ${photos.extra.map(p=>`<div style="text-align:center">
+          ${p.type==='video'
+            ?`<video src="${p.data}" style="width:70px;height:55px;object-fit:cover;border-radius:6px;border:1px solid #e2e8f0" controls></video>`
+            :`<img src="${p.data}" style="width:70px;height:55px;object-fit:cover;border-radius:6px;border:1px solid #e2e8f0">`}
+          ${p.comment?`<div style="font-size:9px;color:#64748b;max-width:70px">${p.comment}</div>`:""}
+        </div>`).join("")}
+      </div>`:""}
+      ${casseHtml}
     </div>
     <button class="btn bl" onclick="printPDF()">🖨️ Exporter PDF</button>
     ${!saved
@@ -281,8 +375,9 @@ function s3(){
   </div>`;
 }
 
+// STEP 4 - Email
 function s4(){
-  if(!emailBody) buildEmail();
+  if(!emailBody)buildEmail();
   return`<div class="card">
     <h2>5. Email au client</h2>
     <p style="font-size:12px;color:#64748b;margin-bottom:4px">Destinataire : <strong>${sel.email||"Email non renseigné"}</strong></p>
@@ -290,12 +385,7 @@ function s4(){
     <input value="${emailObj.replace(/"/g,'&quot;')}" oninput="emailObj=this.value">
     <label class="lbl">Corps du message</label>
     <textarea rows="12" oninput="emailBody=this.value">${emailBody}</textarea>
-    <div class="info">
-      💡 <strong>Envoyer via Infomaniak :</strong><br>
-      1. "Ouvrir messagerie" → email pré-rempli<br>
-      2. Joignez le PDF exporté<br>
-      3. Envoyez !
-    </div>
+    <div class="info">💡 Ouvrez votre messagerie → joignez le PDF → envoyez !</div>
     <button class="btn bp" onclick="openMail()" style="margin-top:10px">📨 Ouvrir dans ma messagerie</button>
     <button class="btn bl" id="btn-cp" onclick="copyMail()">📋 Copier l'email</button>
     <button class="btn bl" onclick="printPDF()">🖨️ Ré-exporter PDF</button>
@@ -307,22 +397,20 @@ async function saveNotion(){
   if(sending)return;
   sending=true;showErr("");
   const btn=document.getElementById("btn-save");
-  if(btn) btn.textContent="⏳ Envoi vers Notion...";
+  if(btn)btn.textContent="⏳ Envoi vers Notion...";
   try{
-    const pnames=Object.entries(photos).map(([k])=>PHOTOS.find(s=>s.k===k)?.l||k);
-    const blocks=buildBlocks(pnames);
+    const blocks=buildBlocks();
     const res=await notionCall("PATCH",`blocks/${sel.pageId}/children`,{children:blocks});
-    if(res.object==="error") throw new Error(res.message||"Erreur Notion");
+    if(res.object==="error")throw new Error(res.message);
     saved=true;
     await notionCall("PATCH",`pages/${sel.pageId}`,{properties:{État:{status:{name:"Nettoyé"}}}});
-  }catch(e){showErr("Erreur réseau: "+e.message);}
-  sending=false;
-  render();
+  }catch(e){showErr("Erreur Notion: "+e.message);}
+  sending=false;render();
 }
 
-function buildBlocks(photoNames){
+function buildBlocks(){
   const b=[];
-  const t=txt=>({type:"paragraph",paragraph:{rich_text:[{type:"text",text:{content:txt||""}}]}});
+  const t=txt=>({type:"paragraph",paragraph:{rich_text:[{type:"text",text:{content:String(txt||"")}}]}});
   const h2=txt=>({type:"heading_2",heading_2:{rich_text:[{type:"text",text:{content:txt}}]}});
   const div=()=>({type:"divider",divider:{}});
   b.push(div());
@@ -334,27 +422,39 @@ function buildBlocks(photoNames){
   b.push(t("📐 Surface : "+sel.m2+" m²"));
   if(R.observations){b.push(h2("Observations générales"));b.push(t(R.observations));}
   if(R.taches){b.push(h2("Tâches significatives"));b.push(t(R.taches));}
-  if(R.difficultes&&R.difficultes!=="RAS"){b.push(h2("Difficultés"));b.push(t(R.difficultes));}
+  if(R.difficultes){b.push(h2("Difficultés rencontrées"));b.push(t(R.difficultes));}
   if(R.recommandations){b.push(h2("Recommandations"));b.push(t(R.recommandations));}
-  if(photoNames.length){b.push(h2("Photos ("+photoNames.length+")"));b.push(t(photoNames.join(" | ")));}
+  PHOTO_CATS.forEach(cat=>{
+    if(photos[cat.k].length){
+      b.push(h2(cat.l));
+      photos[cat.k].forEach((p,i)=>{
+        if(p.comment)b.push(t("Photo "+(i+1)+" : "+p.comment));
+        else b.push(t("Photo "+(i+1)));
+      });
+    }
+  });
+  if(panneauxCasses.length){
+    b.push(h2("🔴 Panneaux cassés ("+panneauxCasses.length+")"));
+    panneauxCasses.forEach((c,i)=>{b.push(t("Panneau #"+(i+1)+(c.comment?" — "+c.comment:"")));});
+  }
   b.push(div());
   return b;
 }
 
 function buildEmail(){
-  const isSIG=sel.id&&(sel.id.startsWith("SIG")||sel.id.startsWith("SIGSOLAR"));
   emailObj=`Rapport d'intervention – ${sel.nom} – ${R.date}`;
+  const casseNote=panneauxCasses.length?`\n⚠️ ${panneauxCasses.length} panneau(x) cassé(s) signalé(s) — voir rapport joint.`:"";
   emailBody=`Madame, Monsieur,
 
-Nous vous faisons parvenir ci-joint le rapport d'intervention concernant le nettoyage de vos panneaux solaires${isSIG?" (Ville de Genève)":""}.
+Nous vous faisons parvenir ci-joint le rapport d'intervention concernant le nettoyage de vos panneaux solaires.
 
 📅 Date : ${R.date}
 📐 Surface nettoyée : ${sel.m2} m²
 👷 Équipe : ${R.intervenants} intervenant(s) — Durée : ${R.duree} jour(s)
 🧴 Produits utilisés : ${R.produits}
+${R.observations?"\nObservations : "+R.observations:""}
+${R.recommandations?"\nRecommandations : "+R.recommandations:""}${casseNote}
 
-Observations : ${R.observations}
-${R.recommandations?"Recommandations : "+R.recommandations+"\n":""}
 Le rapport complet avec photos est disponible en pièce jointe (PDF).
 
 Nous restons à votre disposition pour toute question.
@@ -364,13 +464,12 @@ L'équipe Cleanosolar`;
 }
 
 function openMail(){
-  const b=encodeURIComponent(emailBody+"\n\n⚠️ Joindre le PDF du rapport.");
-  window.location.href=`mailto:${sel.email||""}?subject=${encodeURIComponent(emailObj)}&body=${b}`;
+  window.location.href=`mailto:${sel.email||""}?subject=${encodeURIComponent(emailObj)}&body=${encodeURIComponent(emailBody+"\n\n⚠️ Joindre le PDF.")}`;
 }
 
 function copyMail(){
   const txt=`OBJET: ${emailObj}\n\n${emailBody}`;
-  if(navigator.clipboard){navigator.clipboard.writeText(txt);}
+  if(navigator.clipboard)navigator.clipboard.writeText(txt);
   else{const ta=document.createElement("textarea");ta.value=txt;document.body.appendChild(ta);ta.select();document.execCommand("copy");document.body.removeChild(ta);}
   const b=document.getElementById("btn-cp");
   b.textContent="✓ Copié !";b.className="btn bg";
@@ -378,18 +477,30 @@ function copyMail(){
 }
 
 function printPDF(){
-  const thumbs=Object.entries(photos).map(([k,v])=>`
-    <div style="display:inline-block;width:30%;margin:1%;vertical-align:top;text-align:center">
-      <img src="${v.data}" style="width:100%;height:100px;object-fit:cover;border-radius:6px;border:1px solid #e2e8f0">
-      <div style="font-size:10px;color:#64748b;margin-top:3px">${PHOTOS.find(s=>s.k===k)?.l||k}</div>
+  const totalPhotos=Object.values(photos).flat().length;
+  const photosHtml=PHOTO_CATS.filter(cat=>photos[cat.k].length>0).map(cat=>`
+    <h2>${cat.l}</h2>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px">
+      ${photos[cat.k].map((p,i)=>`<div style="text-align:center">
+        <img src="${p.data}" style="width:120px;height:90px;object-fit:cover;border-radius:6px;border:1px solid #e2e8f0">
+        ${p.comment?`<div style="font-size:9px;color:#64748b;max-width:120px;margin-top:2px">${p.comment}</div>`:""}
+      </div>`).join("")}
     </div>`).join("");
+  const casseHtml=panneauxCasses.length?`<h2>🔴 Panneaux cassés</h2>${panneauxCasses.map((c,i)=>`
+    <div style="background:#fff5f5;border-radius:8px;padding:10px;margin-bottom:8px;border:1px solid #fca5a5">
+      <strong>Panneau #${i+1}</strong>${c.comment?" — "+c.comment:""}
+      <div style="display:flex;gap:8px;margin-top:6px">
+        ${c.photo?`<div><img src="${c.photo}" style="width:120px;height:90px;object-fit:cover;border-radius:6px"><div style="font-size:9px;text-align:center;color:#64748b">Panneau</div></div>`:""}
+        ${c.position?`<div><img src="${c.position}" style="width:120px;height:90px;object-fit:cover;border-radius:6px"><div style="font-size:9px;text-align:center;color:#64748b">Position</div></div>`:""}
+      </div>
+    </div>`).join("")}`:"";
   const w=window.open("","_blank");
   w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Rapport – ${sel.nom}</title>
   <style>body{font-family:Arial,sans-serif;padding:28px;color:#1e293b;font-size:13px}
   .hdr{display:flex;justify-content:space-between;border-bottom:3px solid #1e3a5f;padding-bottom:14px;margin-bottom:18px}
   .logo{font-size:20px;font-weight:800;color:#1e3a5f}.logo span{color:#2563eb}
   .meta{display:grid;grid-template-columns:1fr 1fr;gap:5px 20px;background:#f8fafc;border-radius:8px;padding:12px;margin-bottom:14px;font-size:12px}
-  h2{font-size:12px;font-weight:700;color:#1e3a5f;border-left:3px solid #2563eb;padding-left:8px;margin:14px 0 5px}
+  h2{font-size:12px;font-weight:700;color:#1e3a5f;border-left:3px solid #2563eb;padding-left:8px;margin:14px 0 6px}
   .sec{background:#f8fafc;border-radius:6px;padding:9px 12px;font-size:12px;line-height:1.6;margin-bottom:8px}
   .footer{margin-top:24px;border-top:1px solid #e2e8f0;padding-top:10px;font-size:10px;color:#94a3b8;display:flex;justify-content:space-between}
   @media print{body{padding:16px}}</style></head><body>
@@ -404,27 +515,28 @@ function printPDF(){
     <div><span style="color:#64748b">Intervenants :</span> <strong>${R.intervenants}</strong></div>
     <div><span style="color:#64748b">Durée :</span> <strong>${R.duree} jour(s)</strong></div>
     <div><span style="color:#64748b">Produits :</span> <strong>${R.produits}</strong></div>
-    <div><span style="color:#64748b">Photos :</span> <strong>${Object.keys(photos).length}</strong></div>
+    <div><span style="color:#64748b">Photos :</span> <strong>${totalPhotos}</strong></div>
   </div>
   ${R.observations?`<h2>📝 Observations générales</h2><div class="sec">${R.observations}</div>`:""}
   ${R.taches?`<h2>🔧 Tâches significatives</h2><div class="sec">${R.taches}</div>`:""}
-  ${R.difficultes&&R.difficultes!=="RAS"?`<h2>⚠️ Difficultés</h2><div class="sec">${R.difficultes}</div>`:""}
+  ${R.difficultes?`<h2>⚠️ Difficultés</h2><div class="sec">${R.difficultes}</div>`:""}
   ${R.recommandations?`<h2>💡 Recommandations</h2><div class="sec">${R.recommandations}</div>`:""}
-  ${Object.keys(photos).length?`<h2>📷 Photos d'intervention</h2>${thumbs}`:""}
+  ${photosHtml}${casseHtml}
   <div class="footer"><div>Cleanosolar SA</div><div>Généré le ${new Date().toLocaleDateString("fr-CH")}</div></div>
   </body></html>`);
   w.document.close();setTimeout(()=>w.print(),500);
 }
 
 function reset(){
-  step=0;sel=null;photos={};saved=false;sending=false;emailObj="";emailBody="";
-  R={date:today,intervenants:"2",duree:"0.5",produits:"Eau pure",observations:"",taches:"",difficultes:"RAS",recommandations:""};
+  step=0;sel=null;saved=false;sending=false;emailObj="";emailBody="";q="";
+  photos={toit:[],avant:[],apres:[],tache:[],eau:[],acces:[],extra:[]};
+  panneauxCasses=[];
+  R={date:today,intervenants:"2",duree:"0.5",produits:"Eau pure",observations:"",taches:"",difficultes:"",recommandations:""};
   showErr("");render();
 }
 
-// Auto-load on start + refresh every 30s
 loadClients();
-setInterval(()=>{ if(step===0) loadClients(); }, 30000);
+setInterval(()=>{if(step===0)loadClients();},30000);
 </script>
 </body>
 </html>
