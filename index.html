@@ -158,6 +158,7 @@ function openModal(html){
 function closeModal(){document.getElementById("modal").style.display="none";}
 
 async function showChantier(pageId){
+  const client=clients.find(c=>c.pageId===pageId)||{nom:"",pageId};
   openModal(`<div style="text-align:center;padding:30px"><div class="spinner"></div><br>Chargement infos chantier...</div>`);
   try{
     // Récupère la page d'intervention pour trouver le lien client
@@ -215,7 +216,7 @@ async function showChantier(pageId){
       }
     }
     adresse=adresse.trim();
-    const dest=encodeURIComponent(adresse||sel.nom);
+    const dest=encodeURIComponent(adresse||client.nom);
     const gmaps=mapsUrl||`https://www.google.com/maps/search/?api=1&query=${dest}`;
     const gsat=`https://www.google.com/maps/search/?api=1&query=${dest}&layer=satellite`;
     const gnav=`https://www.google.com/maps/dir/?api=1&destination=${dest}`;
@@ -224,7 +225,7 @@ async function showChantier(pageId){
     openModal(`
       <button onclick="closeModal()" style="float:right;background:none;border:none;font-size:24px;cursor:pointer;color:#64748b;line-height:1">×</button>
       <div style="font-weight:800;font-size:16px;color:#1a1a1a;margin-bottom:2px">📋 Infos chantier</div>
-      <div style="font-size:12px;color:#3ECFB2;font-weight:700;margin-bottom:16px">${clients.find(c=>c.pageId===pageId)?.nom||""}</div>
+      <div style="font-size:12px;color:#3ECFB2;font-weight:700;margin-bottom:16px">${client.nom}</div>
       ${adresse?`<div style="background:#f0fdf9;border:1.5px solid #3ECFB2;border-radius:10px;padding:10px 14px;margin-bottom:14px">
         <div style="font-weight:700;font-size:12px;color:#1a1a1a;margin-bottom:3px">📍 Adresse</div>
         <div style="font-size:13px;color:#374151">${adresse}</div>
