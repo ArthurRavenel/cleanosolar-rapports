@@ -187,21 +187,21 @@ async function showChantier(pageId){
     if(!blocks||!blocks.results)throw new Error("Blocs introuvables");
 
     // Récupère récursivement tous les textes
-    async function getChildTexts(blockId){
+    async function getChildTexts(blockId, depth=0){
+      if(depth>6)return[];
       const ch=await notionCall("GET",`blocks/${blockId}/children?page_size=50`);
       if(!ch||!ch.results)return[];
       let texts=[];
       for(const b of ch.results){
-        // Extrait le texte direct du bloc
         let txt="";
         if(b.type==="callout") txt=b.callout.rich_text.map(r=>r.plain_text).join("").trim();
         else if(b.type==="paragraph") txt=b.paragraph.rich_text.map(r=>r.plain_text).join("").trim();
         else if(b.type==="bulleted_list_item") txt="• "+b.bulleted_list_item.rich_text.map(r=>r.plain_text).join("").trim();
-        else if(b.type==="heading_3") txt="— "+b.heading_3.rich_text.map(r=>r.plain_text).join("").trim()+" —";
-        if(txt&&txt!=="• "&&txt!=="—  —")texts.push(txt);
-        // Toujours récursif si has_children
+        else if(b.type==="numbered_list_item") txt=b.numbered_list_item.rich_text.map(r=>r.plain_text).join("").trim();
+        else if(b.type==="heading_3") txt=b.heading_3.rich_text.map(r=>r.plain_text).join("").trim();
+        if(txt&&txt!=="• ")texts.push(txt);
         if(b.has_children){
-          const sub=await getChildTexts(b.id);
+          const sub=await getChildTexts(b.id, depth+1);
           texts=texts.concat(sub);
         }
       }
