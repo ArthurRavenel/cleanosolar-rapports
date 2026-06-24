@@ -79,7 +79,7 @@ async function notionCall(method, path, body){
   });
   return res.json();
 }
-const EXCLUDE = ["Payé","Facturé"];
+const INCLUDE = ["Planifier confirmé - Team 1","Planifier confirmé - Team 2"];
 
 const PHOTOS=[
   {k:"toit",l:"🏠 Toit"},{k:"avant",l:"🔴 Avant"},{k:"apres",l:"✅ Après"},
@@ -114,7 +114,7 @@ async function loadClients(){
   try{
     let all=[], cursor=undefined, hasMore=true;
     while(hasMore){
-      const body={page_size:100,filter:{or:EXCLUDE.map(s=>({property:"État",status:{does_not_equal:s}}))}};
+      const body={page_size:100,filter:{or:INCLUDE.map(s=>({property:"État",status:{equals:s}}))}};
       if(cursor) body.start_cursor=cursor;
       const data=await notionCall("POST",`databases/${DB_ID}/query`,body);
       if(data.object==="error") throw new Error(data.message||"Erreur Notion");
@@ -124,14 +124,14 @@ async function loadClients(){
     }
     clients=all.map(p=>{
       const props=p.properties;
-      const nom=props["Nom"]?.title?.[0]?.plain_text||props["Name"]?.title?.[0]?.plain_text||"Sans nom";
+      const nom=props["Nom"]?.rich_text?.[0]?.plain_text||props["Nom"]?.text?.[0]?.plain_text||"Sans nom";
       const email=props["Email"]?.email||"";
       const m2=props["m2"]?.number||0;
-      const etat=props["État"]?.status?.name||props["État"]?.select?.name||"";
-      const dateVal=props["Date"]?.date?.start||props["date:Date:start"]?.date?.start||"";
-      const id=props["Identifiant"]?.rich_text?.[0]?.plain_text||props["ID"]?.rich_text?.[0]?.plain_text||"";
+      const etat=props["État"]?.status?.name||"";
+      const dateVal=props["Date"]?.date?.start||"";
+      const id=props["Identifiant"]?.title?.[0]?.plain_text||"";
       return{url:p.url,pageId:p.id,nom,email,m2,etat,date:dateVal,id};
-    }).filter(c=>!EXCLUDE.includes(c.etat));
+    }).filter(c=>INCLUDE.includes(c.etat));
     clients.sort((a,b)=>{
       if(!a.date) return 1;
       if(!b.date) return -1;
