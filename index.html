@@ -141,7 +141,8 @@ async function loadClients(){
       const etat=pr["État"]&&pr["État"].status?pr["État"].status.name:"";
       const dateVal=pr["Date"]&&pr["Date"].date?pr["Date"].date.start:"";
       const id=pr["Identifiant"]&&pr["Identifiant"].title&&pr["Identifiant"].title.length?pr["Identifiant"].title[0].plain_text:"";
-      return{url:p.url,pageId:p.id,nom,email,m2,etat,date:dateVal,id};
+      const adresse=pr["Adresse"]&&pr["Adresse"].rich_text&&pr["Adresse"].rich_text.length?pr["Adresse"].rich_text[0].plain_text:"";
+      return{url:p.url,pageId:p.id,nom,email,m2,etat,date:dateVal,id,adresse};
     });
     clients.sort((a,b)=>!a.date?1:!b.date?-1:a.date<b.date?-1:1);
   }catch(e){showErr("Erreur chargement Notion: "+e.message);}
@@ -161,81 +162,72 @@ async function showChantier(pageId){
   const client=clients.find(c=>c.pageId===pageId)||{nom:"",pageId};
   openModal(`<div style="text-align:center;padding:30px"><div class="spinner"></div><br>Chargement infos chantier...</div>`);
   try{
-    // Récupère la page d'intervention pour trouver le lien client
+    // Récupère le lien client depuis le champ Nom
     const page=await notionCall("GET",`pages/${pageId}`);
     const nomProp=page.properties&&page.properties["Nom"];
     let clientPageId=null;
     if(nomProp&&nomProp.rich_text){
       for(const rt of nomProp.rich_text){
-        let u=null;
-        if(rt.text&&rt.text.link&&rt.text.link.url) u=rt.text.link.url;
-        else if(rt.href) u=rt.href;
-        if(u){
-          // Extrait le dernier segment de 32 caractères hex
-          const m=u.replace(/-/g,"").match(/([a-f0-9]{32})/);
-          if(m)clientPageId=m[1];
-        }
+        let u=rt.href||(rt.text&&rt.text.link&&rt.text.link.url)||null;
+        if(u){const m=u.replace(/-/g,"").match(/([a-f0-9]{32})/);if(m)clientPageId=m[1];}
       }
     }
-    console.log("clientPageId:",clientPageId);
     if(!clientPageId){
-      openModal(`<button onclick="closeModal()" style="float:right;background:none;border:none;font-size:22px;cursor:pointer">×</button><div style="padding:20px;color:#dc2626;font-size:13px">Aucune page client liée trouvée.</div>`);
+      openModal(`<button onclick="closeModal()" style="float:right;background:none;border:none;font-size:22px;cursor:pointer">×</button>
+        <div style="padding:20px;color:#94a3b8;font-size:13px;text-align:center">Aucune fiche client liée à cette intervention.</div>`);
       return;
     }
-    // Récupère les blocs de la page client
-    const blocks=await notionCall("GET",`blocks/${clientPageId}/children?page_size=80`);
-    if(!blocks||!blocks.results)throw new Error("Blocs introuvables");
 
-    // Récupère récursivement tous les textes
-    async function getChildTexts(blockId, depth=0){
-      if(depth>6)return[];
-      const ch=await notionCall("GET",`blocks/${blockId}/children?page_size=50`);
-      if(!ch||!ch.results)return[];
-      let texts=[];
-      for(const b of ch.results){
-        let txt="";
-        if(b.type==="callout") txt=b.callout.rich_text.map(r=>r.plain_text).join("").trim();
-        else if(b.type==="paragraph") txt=b.paragraph.rich_text.map(r=>r.plain_text).join("").trim();
-        else if(b.type==="bulleted_list_item") txt="• "+b.bulleted_list_item.rich_text.map(r=>r.plain_text).join("").trim();
-        else if(b.type==="numbered_list_item") txt=b.numbered_list_item.rich_text.map(r=>r.plain_text).join("").trim();
-        else if(b.type==="heading_3") txt=b.heading_3.rich_text.map(r=>r.plain_text).join("").trim();
-        if(txt&&txt!=="• ")texts.push(txt);
-        if(b.has_children){
-          const sub=await getChildTexts(b.id, depth+1);
-          texts=texts.concat(sub);
+    // Extraction texte depuis n'importe quel bloc (récursif)
+    async function extractTexts(blockId){
+      let res=[];
+      try{
+        const ch=await notionCall("GET",`blocks/${blockId}/children?page_size=100`);
+        if(!ch||!ch.results)return res;
+        for(const b of ch.results){
+          let txt="";
+          const t=b.type;
+          if(t==="bulleted_list_item") txt=b.bulleted_list_item.rich_text.map(r=>r.plain_text).join("").trim();
+          else if(t==="numbered_list_item") txt=b.numbered_list_item.rich_text.map(r=>r.plain_text).join("").trim();
+          else if(t==="paragraph") txt=b.paragraph.rich_text.map(r=>r.plain_text).join("").trim();
+          else if(t==="callout") txt=b.callout.rich_text.map(r=>r.plain_text).join("").trim();
+          if(txt)res.push(txt);
+          // Récursif sur tous les enfants
+          const sub=await extractTexts(b.id);
+          res=res.concat(sub);
         }
-      }
-      return texts;
+      }catch(e){}
+      return res;
     }
 
-    let adresse="",mapsUrl="",infos=[],miseEnPlace=[];
+    // Charge la page client
+    const blocks=await notionCall("GET",`blocks/${clientPageId}/children?page_size=100`);
+    if(!blocks||!blocks.results)throw new Error("Page client inaccessible");
+
+    let adresse="",mapsUrl="",infosGen=[],miseEnPlace=[];
     for(const b of blocks.results){
-      // Colonnes avec callouts (infos générales) — charge récursivement
-      if(b.type==="column_list"&&b.has_children){
-        const txts=await getChildTexts(b.id);
-        infos=infos.concat(txts);
+      const t=b.type;
+      const htxt=t==="heading_2"?b.heading_2.rich_text.map(r=>r.plain_text).join("").toLowerCase():"";
+      // Colonnes = infos générales (callouts avec listes)
+      if(t==="column_list"){
+        const txts=await extractTexts(b.id);
+        infosGen=infosGen.concat(txts.filter(x=>x));
       }
-      // Toggles heading_2
-      if(b.type==="heading_2"&&b.has_children){
-        const htxt=b.heading_2.rich_text.map(r=>r.plain_text).join("").toLowerCase();
-        if(htxt.includes("adresse")){
-          const ch=await notionCall("GET",`blocks/${b.id}/children?page_size=20`);
-          if(ch&&ch.results){
-            for(const c of ch.results){
-              if(c.type==="paragraph"){const t=c.paragraph.rich_text.map(r=>r.plain_text).join("").trim();if(t)adresse+=t+" ";}
-              if(c.type==="embed"||c.type==="bookmark"){const u=c[c.type]&&c[c.type].url;if(u&&u.includes("map"))mapsUrl=u;}
-              if(c.type==="link_preview"){const u=c.link_preview&&c.link_preview.url;if(u&&u.includes("map"))mapsUrl=u;}
-              if(c.has_children){
-                const sub=await getChildTexts(c.id);
-                sub.forEach(t=>{if(t.includes("map")||t.includes("http"))mapsUrl=t;else adresse+=t+" ";});
-              }
-            }
+      // Toggle Adresse
+      if(t==="heading_2"&&htxt.includes("adresse")){
+        const ch=await notionCall("GET",`blocks/${b.id}/children?page_size=20`);
+        if(ch&&ch.results){
+          for(const c of ch.results){
+            if(c.type==="paragraph"){const tx=c.paragraph.rich_text.map(r=>r.plain_text).join("").trim();if(tx)adresse+=tx+" ";}
+            if(c.type==="embed"||c.type==="bookmark"){const u=c[c.type]?.url;if(u&&u.includes("map"))mapsUrl=u;}
+            if(c.type==="link_preview"){const u=c.link_preview?.url;if(u&&u.includes("map"))mapsUrl=u;}
           }
         }
-        if(htxt.includes("mise en place")){
-          const txts=await getChildTexts(b.id);
-          miseEnPlace=miseEnPlace.concat(txts);
-        }
+      }
+      // Toggle Mise en place chantier
+      if(t==="heading_2"&&htxt.includes("mise en place")){
+        const txts=await extractTexts(b.id);
+        miseEnPlace=miseEnPlace.concat(txts.filter(x=>x));
       }
     }
     adresse=adresse.trim();
@@ -248,10 +240,10 @@ async function showChantier(pageId){
     openModal(`
       <button onclick="closeModal()" style="float:right;background:none;border:none;font-size:24px;cursor:pointer;color:#64748b;line-height:1">×</button>
       <div style="font-weight:800;font-size:16px;color:#1a1a1a;margin-bottom:2px">📋 Infos chantier</div>
-      <div style="font-size:12px;color:#3ECFB2;font-weight:700;margin-bottom:16px">${client.nom}</div>
-      ${adresse?`<div style="background:#f0fdf9;border:1.5px solid #3ECFB2;border-radius:10px;padding:10px 14px;margin-bottom:14px">
-        <div style="font-weight:700;font-size:12px;color:#1a1a1a;margin-bottom:3px">📍 Adresse</div>
-        <div style="font-size:13px;color:#374151">${adresse}</div>
+      <div style="font-size:12px;color:#3ECFB2;font-weight:700;margin-bottom:14px">${client.nom}</div>
+      ${adresse?`<div style="background:#f0fdf9;border:1.5px solid #3ECFB2;border-radius:10px;padding:10px 14px;margin-bottom:12px">
+        <div style="font-weight:700;font-size:11px;color:#64748b;margin-bottom:2px">📍 ADRESSE</div>
+        <div style="font-size:14px;font-weight:600;color:#1a1a1a">${adresse}</div>
       </div>`:""}
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px">
         <a href="${gmaps}" target="_blank" style="background:#1a1a1a;color:#fff;border-radius:10px;padding:12px 8px;text-align:center;text-decoration:none;font-size:12px;font-weight:700;display:block">🗺️ Google Maps</a>
@@ -259,13 +251,15 @@ async function showChantier(pageId){
         <a href="${gnav}" target="_blank" style="background:#3ECFB2;color:#1a1a1a;border-radius:10px;padding:12px 8px;text-align:center;text-decoration:none;font-size:12px;font-weight:700;display:block">🧭 Itinéraire Google</a>
         <a href="${amap}" target="_blank" style="background:#3ECFB2;color:#1a1a1a;border-radius:10px;padding:12px 8px;text-align:center;text-decoration:none;font-size:12px;font-weight:700;display:block">🍎 Plans Apple</a>
       </div>
-      ${infos.length?`<div style="font-weight:700;font-size:13px;margin-bottom:8px">ℹ️ Informations générales</div>
-      ${infos.map(i=>`<div style="background:#f8fafc;border-radius:8px;padding:8px 12px;margin-bottom:6px;font-size:12px;color:#374151;line-height:1.5">${i}</div>`).join("")}`:""}
+      ${infosGen.length?`<div style="font-weight:700;font-size:13px;margin-bottom:8px">ℹ️ Informations générales</div>
+        ${infosGen.map(i=>`<div style="background:#f8fafc;border-radius:8px;padding:8px 12px;margin-bottom:5px;font-size:12px;color:#374151;line-height:1.5">• ${i}</div>`).join("")}`
+        :`<div style="color:#94a3b8;font-size:12px;text-align:center;padding:8px">Aucune info générale trouvée</div>`}
       ${miseEnPlace.length?`<div style="font-weight:700;font-size:13px;margin:12px 0 8px">🔧 Mise en place chantier</div>
-      ${miseEnPlace.map(i=>`<div style="background:#f0fdf9;border-radius:8px;padding:8px 12px;margin-bottom:6px;font-size:12px;color:#374151;line-height:1.5">${i}</div>`).join("")}`:""}
+        ${miseEnPlace.map(i=>`<div style="background:#f0fdf9;border-radius:8px;padding:8px 12px;margin-bottom:5px;font-size:12px;color:#374151;line-height:1.5">• ${i}</div>`).join("")}`:""}
     `);
   }catch(e){
-    openModal(`<button onclick="closeModal()" style="float:right;background:none;border:none;font-size:22px;cursor:pointer">×</button><div style="padding:20px;color:#dc2626;font-size:13px">Erreur : ${e.message}</div>`);
+    openModal(`<button onclick="closeModal()" style="float:right;background:none;border:none;font-size:22px;cursor:pointer">×</button>
+      <div style="padding:20px;color:#dc2626;font-size:13px">Erreur : ${e.message}</div>`);
   }
 }
 
