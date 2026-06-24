@@ -124,12 +124,13 @@ async function loadClients(){
     }
     clients=all.map(p=>{
       const props=p.properties;
-      const nom=props["Nom"]?.rich_text?.[0]?.plain_text||props["Nom"]?.text?.[0]?.plain_text||"Sans nom";
+      const nom=props["Nom"]?.rich_text?.[0]?.plain_text||"Sans nom";
       const email=props["Email"]?.email||"";
       const m2=props["m2"]?.number||0;
       const etat=props["État"]?.status?.name||"";
       const dateVal=props["Date"]?.date?.start||"";
       const id=props["Identifiant"]?.title?.[0]?.plain_text||"";
+      return{url:p.url,pageId:p.id,nom,email,m2,etat,date:dateVal,id};
       return{url:p.url,pageId:p.id,nom,email,m2,etat,date:dateVal,id};
     }).filter(c=>INCLUDE.includes(c.etat));
     clients.sort((a,b)=>{
