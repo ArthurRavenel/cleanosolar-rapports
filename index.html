@@ -1,90 +1,4 @@
-async function showChantier(pageId){
-  const client=clients.find(c=>c.pageId===pageId)||{nom:"",pageId};
-  openModal(`<div style="text-align:center;padding:30px"><div class="spinner"></div><br>Chargement...</div>`);
-  try{
-    // Récupère le lien client depuis le champ Nom
-    const page=await notionCall("GET",`pages/${pageId}`);
-    const nomProp=page.properties&&page.properties["Nom"];
-    let clientPageId=null, clientPageUrl=null;
-    if(nomProp&&nomProp.rich_text){
-      for(const rt of nomProp.rich_text){
-        let u=rt.href||(rt.text&&rt.text.link&&rt.text.link.url)||null;
-        if(u){
-          const m=u.replace(/-/g,"").match(/([a-f0-9]{32})/);
-          if(m){clientPageId=m[1];clientPageUrl=`https://www.notion.so/${m[1]}`;}
-        }
-      }
-    }
-
-    // Récupère les infos depuis la page client
-    let infosGen=[], miseEnPlace=[], adresse="", mapsUrl="";
-    if(clientPageId){
-      const blocks=await notionCall("GET",`blocks/${clientPageId}/children?page_size=100`);
-      if(blocks&&blocks.results){
-        for(const b of blocks.results){
-          const t=b.type;
-          const htxt=t==="heading_2"?b.heading_2.rich_text.map(r=>r.plain_text).join("").toLowerCase():"";
-
-          // Infos générales dans les colonnes
-          if(t==="column_list"){
-            // Charge les colonnes
-            const cols=await notionCall("GET",`blocks/${b.id}/children?page_size=20`);
-            if(cols&&cols.results){
-              for(const col of cols.results){
-                // Charge les callouts dans chaque colonne
-                const callouts=await notionCall("GET",`blocks/${col.id}/children?page_size=20`);
-                if(callouts&&callouts.results){
-                  for(const ca of callouts.results){
-                    // Texte direct du callout
-                    const ctxt=ca.callout?.rich_text?.map(r=>r.plain_text).join("").trim()||"";
-                    if(ctxt)infosGen.push(ctxt);
-                    // Enfants du callout (listes à puces)
-                    const items=await notionCall("GET",`blocks/${ca.id}/children?page_size=20`);
-                    if(items&&items.results){
-                      for(const it of items.results){
-                        const itxt=it.bulleted_list_item?.rich_text?.map(r=>r.plain_text).join("").trim()
-                          ||it.paragraph?.rich_text?.map(r=>r.plain_text).join("").trim()||"";
-                        if(itxt)infosGen.push(itxt);
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-
-          // Toggle Adresse
-          if(t==="heading_2"&&htxt.includes("adresse")){
-            const ch=await notionCall("GET",`blocks/${b.id}/children?page_size=20`);
-            if(ch&&ch.results){
-              for(const c of ch.results){
-                if(c.type==="paragraph"){const tx=c.paragraph.rich_text.map(r=>r.plain_text).join("").trim();if(tx)adresse+=tx+" ";}
-                if(c.type==="embed"||c.type==="bookmark"){const u=c[c.type]?.url;if(u)mapsUrl=u;}
-                if(c.type==="link_preview"){const u=c.link_preview?.url;if(u)mapsUrl=u;}
-              }
-            }
-          }
-
-          // Toggle Mise en place
-          if(t==="heading_2"&&htxt.includes("mise en place")){
-            const ch=await notionCall("GET",`blocks/${b.id}/children?page_size=50`);
-            if(ch&&ch.results){
-              for(const c of ch.results){
-                const ctxt=c.bulleted_list_item?.rich_text?.map(r=>r.plain_text).join("").trim()
-                  ||c.paragraph?.rich_text?.map(r=>r.plain_text).join("").trim()
-                  ||c.heading_3?.rich_text?.map(r=>r.plain_text).join("").trim()||"";
-                if(ctxt)miseEnPlace.push(ctxt);
-              }
-            }
-          }
-        }
-      }
-    }
-
-    adresse=adresse.trim();
-    const dest=encodeURIComponent(adresse||client.nom);
-    const gmaps=mapsUrl||`https://www.google.com/maps/search/?api=1&query=${dest}`;
-    const gsat=`https://www.google.com/maps/search/?api=1&q<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
 <meta charset="utf-8">
@@ -246,76 +160,96 @@ function closeModal(){document.getElementById("modal").style.display="none";}
 
 async function showChantier(pageId){
   const client=clients.find(c=>c.pageId===pageId)||{nom:"",pageId};
-  openModal(`<div style="text-align:center;padding:30px"><div class="spinner"></div><br>Chargement infos chantier...</div>`);
+  openModal(`<div style="text-align:center;padding:30px"><div class="spinner"></div><br>Chargement...</div>`);
   try{
     // Récupère le lien client depuis le champ Nom
     const page=await notionCall("GET",`pages/${pageId}`);
     const nomProp=page.properties&&page.properties["Nom"];
-    let clientPageId=null;
+    let clientPageId=null, clientPageUrl=null;
     if(nomProp&&nomProp.rich_text){
       for(const rt of nomProp.rich_text){
         let u=rt.href||(rt.text&&rt.text.link&&rt.text.link.url)||null;
-        if(u){const m=u.replace(/-/g,"").match(/([a-f0-9]{32})/);if(m)clientPageId=m[1];}
-      }
-    }
-    if(!clientPageId){
-      openModal(`<button onclick="closeModal()" style="float:right;background:none;border:none;font-size:22px;cursor:pointer">×</button>
-        <div style="padding:20px;color:#94a3b8;font-size:13px;text-align:center">Aucune fiche client liée à cette intervention.</div>`);
-      return;
-    }
-
-    // Extraction texte depuis n'importe quel bloc (récursif)
-    async function extractTexts(blockId){
-      let res=[];
-      try{
-        const ch=await notionCall("GET",`blocks/${blockId}/children?page_size=100`);
-        if(!ch||!ch.results)return res;
-        for(const b of ch.results){
-          let txt="";
-          const t=b.type;
-          if(t==="bulleted_list_item") txt=b.bulleted_list_item.rich_text.map(r=>r.plain_text).join("").trim();
-          else if(t==="numbered_list_item") txt=b.numbered_list_item.rich_text.map(r=>r.plain_text).join("").trim();
-          else if(t==="paragraph") txt=b.paragraph.rich_text.map(r=>r.plain_text).join("").trim();
-          else if(t==="callout") txt=b.callout.rich_text.map(r=>r.plain_text).join("").trim();
-          if(txt)res.push(txt);
-          // Récursif sur tous les enfants
-          const sub=await extractTexts(b.id);
-          res=res.concat(sub);
+        if(u){
+          const m=u.replace(/-/g,"").match(/([a-f0-9]{32})/);
+          if(m){clientPageId=m[1];clientPageUrl=`https://www.notion.so/${m[1]}`;}
         }
-      }catch(e){}
-      return res;
+      }
     }
 
-    // Charge la page client
-    const blocks=await notionCall("GET",`blocks/${clientPageId}/children?page_size=100`);
-    if(!blocks||!blocks.results)throw new Error("Page client inaccessible");
+    // Récupère les infos depuis la page client
+    let infosGen=[], miseEnPlace=[], adresse="", mapsUrl="";
+    if(clientPageId){
+      const blocks=await notionCall("GET",`blocks/${clientPageId}/children?page_size=100`);
+      if(blocks&&blocks.results){
+        for(const b of blocks.results){
+          const t=b.type;
+          const htxt=t==="heading_2"?b.heading_2.rich_text.map(r=>r.plain_text).join("").toLowerCase():"";
 
-    let adresse="",mapsUrl="",infosGen=[],miseEnPlace=[];
-    for(const b of blocks.results){
-      const t=b.type;
-      const htxt=t==="heading_2"?b.heading_2.rich_text.map(r=>r.plain_text).join("").toLowerCase():"";
-      // Colonnes = infos générales (callouts avec listes)
-      if(t==="column_list"){
-        const txts=await extractTexts(b.id);
-        infosGen=infosGen.concat(txts.filter(x=>x));
-      }
-      // Toggle Adresse
-      if(t==="heading_2"&&htxt.includes("adresse")){
-        const ch=await notionCall("GET",`blocks/${b.id}/children?page_size=20`);
-        if(ch&&ch.results){
-          for(const c of ch.results){
-            if(c.type==="paragraph"){const tx=c.paragraph.rich_text.map(r=>r.plain_text).join("").trim();if(tx)adresse+=tx+" ";}
-            if(c.type==="embed"||c.type==="bookmark"){const u=c[c.type]?.url;if(u&&u.includes("map"))mapsUrl=u;}
-            if(c.type==="link_preview"){const u=c.link_preview?.url;if(u&&u.includes("map"))mapsUrl=u;}
+          // Infos générales dans les colonnes
+          if(t==="column_list"){
+            // Charge les colonnes
+            const cols=await notionCall("GET",`blocks/${b.id}/children?page_size=20`);
+            if(cols&&cols.results){
+              for(const col of cols.results){
+                // Charge les callouts dans chaque colonne
+                const callouts=await notionCall("GET",`blocks/${col.id}/children?page_size=20`);
+                if(callouts&&callouts.results){
+                  for(const ca of callouts.results){
+                    // Enfants directs du callout = bulleted_list_item
+                    const items=await notionCall("GET",`blocks/${ca.id}/children?page_size=30`);
+                    if(items&&items.results){
+                      for(const it of items.results){
+                        // Soit directement un item
+                        const itxt=it.bulleted_list_item?.rich_text?.map(r=>r.plain_text).join("").trim()
+                          ||it.paragraph?.rich_text?.map(r=>r.plain_text).join("").trim()||"";
+                        if(itxt)infosGen.push(itxt);
+                        // Soit un callout intermédiaire contenant les items
+                        if(it.type==="callout"){
+                          const subitems=await notionCall("GET",`blocks/${it.id}/children?page_size=30`);
+                          if(subitems&&subitems.results){
+                            for(const si of subitems.results){
+                              const stxt=si.bulleted_list_item?.rich_text?.map(r=>r.plain_text).join("").trim()
+                                ||si.paragraph?.rich_text?.map(r=>r.plain_text).join("").trim()||"";
+                              if(stxt)infosGen.push(stxt);
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+
+          // Toggle Adresse
+          if(t==="heading_2"&&htxt.includes("adresse")){
+            const ch=await notionCall("GET",`blocks/${b.id}/children?page_size=20`);
+            if(ch&&ch.results){
+              for(const c of ch.results){
+                if(c.type==="paragraph"){const tx=c.paragraph.rich_text.map(r=>r.plain_text).join("").trim();if(tx)adresse+=tx+" ";}
+                if(c.type==="embed"||c.type==="bookmark"){const u=c[c.type]?.url;if(u)mapsUrl=u;}
+                if(c.type==="link_preview"){const u=c.link_preview?.url;if(u)mapsUrl=u;}
+              }
+            }
+          }
+
+          // Toggle Mise en place
+          if(t==="heading_2"&&htxt.includes("mise en place")){
+            const ch=await notionCall("GET",`blocks/${b.id}/children?page_size=50`);
+            if(ch&&ch.results){
+              for(const c of ch.results){
+                const ctxt=c.bulleted_list_item?.rich_text?.map(r=>r.plain_text).join("").trim()
+                  ||c.paragraph?.rich_text?.map(r=>r.plain_text).join("").trim()
+                  ||c.heading_3?.rich_text?.map(r=>r.plain_text).join("").trim()||"";
+                if(ctxt)miseEnPlace.push(ctxt);
+              }
+            }
           }
         }
       }
-      // Toggle Mise en place chantier
-      if(t==="heading_2"&&htxt.includes("mise en place")){
-        const txts=await extractTexts(b.id);
-        miseEnPlace=miseEnPlace.concat(txts.filter(x=>x));
-      }
     }
+
     adresse=adresse.trim();
     const dest=encodeURIComponent(adresse||client.nom);
     const gmaps=mapsUrl||`https://www.google.com/maps/search/?api=1&query=${dest}`;
@@ -327,21 +261,28 @@ async function showChantier(pageId){
       <button onclick="closeModal()" style="float:right;background:none;border:none;font-size:24px;cursor:pointer;color:#64748b;line-height:1">×</button>
       <div style="font-weight:800;font-size:16px;color:#1a1a1a;margin-bottom:2px">📋 Infos chantier</div>
       <div style="font-size:12px;color:#3ECFB2;font-weight:700;margin-bottom:14px">${client.nom}</div>
+
       ${adresse?`<div style="background:#f0fdf9;border:1.5px solid #3ECFB2;border-radius:10px;padding:10px 14px;margin-bottom:12px">
         <div style="font-weight:700;font-size:11px;color:#64748b;margin-bottom:2px">📍 ADRESSE</div>
         <div style="font-size:14px;font-weight:600;color:#1a1a1a">${adresse}</div>
       </div>`:""}
+
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px">
         <a href="${gmaps}" target="_blank" style="background:#1a1a1a;color:#fff;border-radius:10px;padding:12px 8px;text-align:center;text-decoration:none;font-size:12px;font-weight:700;display:block">🗺️ Google Maps</a>
         <a href="${gsat}" target="_blank" style="background:#1a1a1a;color:#fff;border-radius:10px;padding:12px 8px;text-align:center;text-decoration:none;font-size:12px;font-weight:700;display:block">🛰️ Vue satellite</a>
         <a href="${gnav}" target="_blank" style="background:#3ECFB2;color:#1a1a1a;border-radius:10px;padding:12px 8px;text-align:center;text-decoration:none;font-size:12px;font-weight:700;display:block">🧭 Itinéraire Google</a>
         <a href="${amap}" target="_blank" style="background:#3ECFB2;color:#1a1a1a;border-radius:10px;padding:12px 8px;text-align:center;text-decoration:none;font-size:12px;font-weight:700;display:block">🍎 Plans Apple</a>
       </div>
-      ${infosGen.length?`<div style="font-weight:700;font-size:13px;margin-bottom:8px">ℹ️ Informations générales</div>
-        ${infosGen.map(i=>`<div style="background:#f8fafc;border-radius:8px;padding:8px 12px;margin-bottom:5px;font-size:12px;color:#374151;line-height:1.5">• ${i}</div>`).join("")}`
-        :`<div style="color:#94a3b8;font-size:12px;text-align:center;padding:8px">Aucune info générale trouvée</div>`}
-      ${miseEnPlace.length?`<div style="font-weight:700;font-size:13px;margin:12px 0 8px">🔧 Mise en place chantier</div>
-        ${miseEnPlace.map(i=>`<div style="background:#f0fdf9;border-radius:8px;padding:8px 12px;margin-bottom:5px;font-size:12px;color:#374151;line-height:1.5">• ${i}</div>`).join("")}`:""}
+
+      ${infosGen.length?`
+        <div style="font-weight:700;font-size:13px;margin-bottom:8px">ℹ️ Informations générales</div>
+        ${infosGen.map(i=>`<div style="background:#f8fafc;border-radius:8px;padding:7px 12px;margin-bottom:5px;font-size:12px;color:#374151">• ${i}</div>`).join("")}`:""}
+
+      ${miseEnPlace.length?`
+        <div style="font-weight:700;font-size:13px;margin:12px 0 8px">🔧 Mise en place chantier</div>
+        ${miseEnPlace.map(i=>`<div style="background:#f0fdf9;border-radius:8px;padding:7px 12px;margin-bottom:5px;font-size:12px;color:#374151">• ${i}</div>`).join("")}`:""}
+
+      ${clientPageUrl?`<a href="${clientPageUrl}" target="_blank" style="display:block;text-align:center;margin-top:14px;color:#3ECFB2;font-size:12px;font-weight:700;text-decoration:none">📄 Ouvrir la fiche complète dans Notion →</a>`:""}
     `);
   }catch(e){
     openModal(`<button onclick="closeModal()" style="float:right;background:none;border:none;font-size:22px;cursor:pointer">×</button>
