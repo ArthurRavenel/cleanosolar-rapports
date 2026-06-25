@@ -19,10 +19,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .card{background:#fff;border-radius:13px;padding:18px;box-shadow:0 1px 5px rgba(0,0,0,.08);margin-bottom:12px}
 h2{font-size:15px;color:#1a1a1a;margin-bottom:12px;font-weight:700}
 h3{font-size:13px;color:#1a1a1a;margin:14px 0 8px;font-weight:700;border-left:3px solid #3ECFB2;padding-left:8px}
-input,textarea,select{width:100%;border:1.5px solid #e2e8f0;border-radius:8px;padding:10px 12px;font-size:15px;font-family:inherit;outline:none;background:#fff;-webkit-appearance:none}
-input:focus,textarea:focus,select:focus{border-color:#3ECFB2}
+input,textarea{width:100%;border:1.5px solid #e2e8f0;border-radius:8px;padding:10px 12px;font-size:15px;font-family:inherit;outline:none;background:#fff;-webkit-appearance:none}
+input:focus,textarea:focus{border-color:#3ECFB2}
 textarea{resize:vertical;min-height:70px}
-select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2364748b' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px}
 .lbl{font-size:12px;font-weight:700;color:#374151;display:block;margin-bottom:4px;margin-top:12px}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .btn{border:none;border-radius:10px;padding:14px 18px;font-size:15px;font-weight:700;cursor:pointer;width:100%;font-family:inherit;margin-top:8px;-webkit-appearance:none;touch-action:manipulation}
@@ -67,10 +66,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 .casse-photo-box.has{border-color:#22c55e;background:#f0fdf4}
 .casse-photo-box input{display:none}
 .casse-photo-box img{width:100%;height:75px;object-fit:cover}
-.salissure-checks{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
-.sal-chip{display:flex;align-items:center;gap:5px;background:#fff;border:1.5px solid #e2e8f0;border-radius:20px;padding:6px 12px;font-size:12px;cursor:pointer;user-select:none}
-.sal-chip.active{background:#fef9c3;border-color:#d97706;color:#92400e;font-weight:700}
-.sal-chip input{display:none}
+/* Modal */
 #modal{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.55);z-index:1000;align-items:center;justify-content:center;padding:16px}
 .modal-box{background:#fff;border-radius:16px;padding:20px;max-width:500px;width:100%;max-height:85vh;overflow-y:auto;position:relative}
 </style>
@@ -85,7 +81,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
         <stop offset="0%" stop-color="#2a2a2a"/><stop offset="100%" stop-color="#3ECFB2"/>
       </linearGradient></defs>
     </svg>
-    <div><div class="logo">cleanosolar</div><div class="sub">Rapport d'intervention</div></div>
+    <div><div class="logo">cleanosolar</div><div class="sub">Rapport d'intervention 2026</div></div>
   </div>
   <div class="progress" id="prog"></div>
   <div class="err" id="err"></div>
@@ -95,7 +91,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 <script>
 const DB_ID="1d16b0e7fbc9808594e6f4e2dfd4a4e4";
 const API="/.netlify/functions/notion";
-const INCLUDE=["Planifier confirmé - Team 1","Planifier confirmé - Team 2"];
+const INCLUDE=["Planifier confirmé - Team 1","Planifier confirmé - Team 2","Nettoyé"];
 const STEPS=["Client","Photos","Rapport","Aperçu","Email"];
 const today=new Date().toISOString().split("T")[0];
 
@@ -109,46 +105,18 @@ const ec=e=>{const c=(EC[e]||"#f3f4f6:#6b7280").split(":");return{bg:c[0],col:c[
 
 let step=0,sel=null,saved=false,sending=false,q="",emailObj="",emailBody="";
 let clients=[],loadingClients=false;
-
-// Données rapport
-let R={
-  date:today,
-  intervenants:"2",
-  duree:"0.5",
-  produits:"Eau pure",
-  acces_toiture:"",
-  etat_cellules:"RAS",
-  salissures:[],
-  difficulte:"RAS",
-  infos_complementaires:"",
-  materiel_echelle:"",
-  materiel_echelle_toit:"",
-  materiel_pompe:"Non",
-  materiel_tuyau:"30",
-  observations:"",
-  synthese:"",
-  taches_desc:"",
-  prochaine_intervention:"Tous les 2 à 3 ans",
-  anomalie_description:"",
-  nacelle:"Non",
-  parking:""
-};
-
-// Catégories photos — ordre calé sur la template Notion
-const PHOTO_CATS=[
-  {k:"toit",    l:"Vue générale du toit"},
-  {k:"avant",   l:"Panneaux — avant nettoyage"},
-  {k:"apres",   l:"Panneaux — après nettoyage"},
-  {k:"taches",  l:"Tâches significatives"},
-  {k:"saleté",  l:"Salissures notables",  note:"Photos/vidéos des salissures caractéristiques à l'arrivée"},
-  {k:"eau",     l:"Point d'eau"},
-  {k:"acces",   l:"Accès toiture"},
-];
-
-let photos={toit:[],avant:[],apres:[],taches:[],saleté:[],eau:[],acces:[],extra:[]};
+let R={date:today,intervenants:"2",duree:"0.5",produits:"Eau pure",observations:"",taches:"",difficultes:"",recommandations:""};
+let photos={toit:[],avant:[],apres:[],tache:[],eau:[],acces:[],extra:[]};
 let panneauxCasses=[];
 
-const SALISSURES_LIST=["Pollen","Fientes","Voile d'hydrocarbures","Bordures sales","Lichens","Mousses"];
+const PHOTO_CATS=[
+  {k:"toit",l:"🏠 Photos générales du toit"},
+  {k:"avant",l:"🔴 Panneaux Avant nettoyage"},
+  {k:"apres",l:"✅ Panneaux Après nettoyage"},
+  {k:"tache",l:"🔧 Tâches significatives"},
+  {k:"eau",l:"💧 Point d'eau"},
+  {k:"acces",l:"🪜 Accès toiture"},
+];
 
 function showErr(m){const e=document.getElementById("err");e.textContent=m;e.style.display=m?"block":"none";}
 function toDataURL(file){return new Promise((res,rej)=>{const r=new FileReader();r.onload=e=>res(e.target.result);r.onerror=rej;r.readAsDataURL(file);});}
@@ -194,39 +162,54 @@ async function showChantier(pageId){
   const client=clients.find(c=>c.pageId===pageId)||{nom:"",pageId};
   openModal(`<div style="text-align:center;padding:30px"><div class="spinner"></div><br>Chargement...</div>`);
   try{
+    // Récupère le lien client depuis le champ Nom
     const page=await notionCall("GET",`pages/${pageId}`);
     const nomProp=page.properties&&page.properties["Nom"];
-    let clientPageId=null,clientPageUrl=null;
+    let clientPageId=null, clientPageUrl=null;
     if(nomProp&&nomProp.rich_text){
       for(const rt of nomProp.rich_text){
         let u=rt.href||(rt.text&&rt.text.link&&rt.text.link.url)||null;
-        if(u){const m=u.replace(/-/g,"").match(/([a-f0-9]{32})/);if(m){clientPageId=m[1];clientPageUrl=`https://www.notion.so/${m[1]}`;}}
+        if(u){
+          const m=u.replace(/-/g,"").match(/([a-f0-9]{32})/);
+          if(m){clientPageId=m[1];clientPageUrl=`https://www.notion.so/${m[1]}`;}
+        }
       }
     }
-    let infosGen=[],miseEnPlace=[],adresse="",mapsUrl="";
+
+    // Récupère les infos depuis la page client
+    let infosGen=[], miseEnPlace=[], adresse="", mapsUrl="";
     if(clientPageId){
       const blocks=await notionCall("GET",`blocks/${clientPageId}/children?page_size=100`);
       if(blocks&&blocks.results){
         for(const b of blocks.results){
           const t=b.type;
           const htxt=t==="heading_2"?b.heading_2.rich_text.map(r=>r.plain_text).join("").toLowerCase():"";
+
+          // Infos générales dans les colonnes
           if(t==="column_list"){
+            // Charge les colonnes
             const cols=await notionCall("GET",`blocks/${b.id}/children?page_size=20`);
             if(cols&&cols.results){
               for(const col of cols.results){
+                // Charge les callouts dans chaque colonne
                 const callouts=await notionCall("GET",`blocks/${col.id}/children?page_size=20`);
                 if(callouts&&callouts.results){
                   for(const ca of callouts.results){
+                    // Enfants directs du callout = bulleted_list_item
                     const items=await notionCall("GET",`blocks/${ca.id}/children?page_size=30`);
                     if(items&&items.results){
                       for(const it of items.results){
-                        const itxt=it.bulleted_list_item?.rich_text?.map(r=>r.plain_text).join("").trim()||it.paragraph?.rich_text?.map(r=>r.plain_text).join("").trim()||"";
+                        // Soit directement un item
+                        const itxt=it.bulleted_list_item?.rich_text?.map(r=>r.plain_text).join("").trim()
+                          ||it.paragraph?.rich_text?.map(r=>r.plain_text).join("").trim()||"";
                         if(itxt)infosGen.push(itxt);
+                        // Soit un callout intermédiaire contenant les items
                         if(it.type==="callout"){
                           const subitems=await notionCall("GET",`blocks/${it.id}/children?page_size=30`);
                           if(subitems&&subitems.results){
                             for(const si of subitems.results){
-                              const stxt=si.bulleted_list_item?.rich_text?.map(r=>r.plain_text).join("").trim()||si.paragraph?.rich_text?.map(r=>r.plain_text).join("").trim()||"";
+                              const stxt=si.bulleted_list_item?.rich_text?.map(r=>r.plain_text).join("").trim()
+                                ||si.paragraph?.rich_text?.map(r=>r.plain_text).join("").trim()||"";
                               if(stxt)infosGen.push(stxt);
                             }
                           }
@@ -238,6 +221,8 @@ async function showChantier(pageId){
               }
             }
           }
+
+          // Toggle Adresse
           if(t==="heading_2"&&htxt.includes("adresse")){
             const ch=await notionCall("GET",`blocks/${b.id}/children?page_size=20`);
             if(ch&&ch.results){
@@ -248,11 +233,15 @@ async function showChantier(pageId){
               }
             }
           }
+
+          // Toggle Mise en place
           if(t==="heading_2"&&htxt.includes("mise en place")){
             const ch=await notionCall("GET",`blocks/${b.id}/children?page_size=50`);
             if(ch&&ch.results){
               for(const c of ch.results){
-                const ctxt=c.bulleted_list_item?.rich_text?.map(r=>r.plain_text).join("").trim()||c.paragraph?.rich_text?.map(r=>r.plain_text).join("").trim()||c.heading_3?.rich_text?.map(r=>r.plain_text).join("").trim()||"";
+                const ctxt=c.bulleted_list_item?.rich_text?.map(r=>r.plain_text).join("").trim()
+                  ||c.paragraph?.rich_text?.map(r=>r.plain_text).join("").trim()
+                  ||c.heading_3?.rich_text?.map(r=>r.plain_text).join("").trim()||"";
                 if(ctxt)miseEnPlace.push(ctxt);
               }
             }
@@ -260,28 +249,40 @@ async function showChantier(pageId){
         }
       }
     }
+
     adresse=adresse.trim();
     const dest=encodeURIComponent(adresse||client.nom);
     const gmaps=mapsUrl||`https://www.google.com/maps/search/?api=1&query=${dest}`;
     const gsat=`https://www.google.com/maps/search/?api=1&query=${dest}&layer=satellite`;
     const gnav=`https://www.google.com/maps/dir/?api=1&destination=${dest}`;
     const amap=`https://maps.apple.com/?q=${dest}`;
+
     openModal(`
-      <button onclick="closeModal()" style="float:right;background:none;border:none;font-size:22px;cursor:pointer;color:#64748b">×</button>
-      <div style="font-weight:800;font-size:16px;color:#1a1a1a;margin-bottom:14px">${client.nom}</div>
-      ${adresse?`<div style="background:#f0fdf9;border-radius:10px;padding:10px 14px;margin-bottom:14px">
-        <div style="font-weight:700;font-size:11px;color:#64748b;margin-bottom:2px">ADRESSE</div>
+      <button onclick="closeModal()" style="float:right;background:none;border:none;font-size:24px;cursor:pointer;color:#64748b;line-height:1">×</button>
+      <div style="font-weight:800;font-size:16px;color:#1a1a1a;margin-bottom:2px">📋 Infos chantier</div>
+      <div style="font-size:12px;color:#3ECFB2;font-weight:700;margin-bottom:14px">${client.nom}</div>
+
+      ${adresse?`<div style="background:#f0fdf9;border:1.5px solid #3ECFB2;border-radius:10px;padding:10px 14px;margin-bottom:12px">
+        <div style="font-weight:700;font-size:11px;color:#64748b;margin-bottom:2px">📍 ADRESSE</div>
         <div style="font-size:14px;font-weight:600;color:#1a1a1a">${adresse}</div>
       </div>`:""}
+
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px">
         <a href="${gmaps}" target="_blank" style="background:#1a1a1a;color:#fff;border-radius:10px;padding:12px 8px;text-align:center;text-decoration:none;font-size:12px;font-weight:700;display:block">🗺️ Google Maps</a>
         <a href="${gsat}" target="_blank" style="background:#1a1a1a;color:#fff;border-radius:10px;padding:12px 8px;text-align:center;text-decoration:none;font-size:12px;font-weight:700;display:block">🛰️ Vue satellite</a>
         <a href="${gnav}" target="_blank" style="background:#3ECFB2;color:#1a1a1a;border-radius:10px;padding:12px 8px;text-align:center;text-decoration:none;font-size:12px;font-weight:700;display:block">🧭 Itinéraire Google</a>
         <a href="${amap}" target="_blank" style="background:#3ECFB2;color:#1a1a1a;border-radius:10px;padding:12px 8px;text-align:center;text-decoration:none;font-size:12px;font-weight:700;display:block">🍎 Plans Apple</a>
       </div>
-      ${infosGen.length?`<div style="font-weight:700;font-size:13px;margin-bottom:8px">ℹ️ Informations générales</div>${infosGen.map(i=>`<div style="background:#f8fafc;border-radius:8px;padding:7px 12px;margin-bottom:5px;font-size:12px;color:#374151">• ${i}</div>`).join("")}`:""}
-      ${miseEnPlace.length?`<div style="font-weight:700;font-size:13px;margin:12px 0 8px">🔧 Mise en place chantier</div>${miseEnPlace.map(i=>`<div style="background:#f0fdf9;border-radius:8px;padding:7px 12px;margin-bottom:5px;font-size:12px;color:#374151">• ${i}</div>`).join("")}`:""}
-      ${clientPageUrl?`<a href="${clientPageUrl}" target="_blank" style="display:block;text-align:center;margin-top:14px;color:#3ECFB2;font-size:12px;font-weight:700;text-decoration:none">📄 Ouvrir la fiche dans Notion →</a>`:""}
+
+      ${infosGen.length?`
+        <div style="font-weight:700;font-size:13px;margin-bottom:8px">ℹ️ Informations générales</div>
+        ${infosGen.map(i=>`<div style="background:#f8fafc;border-radius:8px;padding:7px 12px;margin-bottom:5px;font-size:12px;color:#374151">• ${i}</div>`).join("")}`:""}
+
+      ${miseEnPlace.length?`
+        <div style="font-weight:700;font-size:13px;margin:12px 0 8px">🔧 Mise en place chantier</div>
+        ${miseEnPlace.map(i=>`<div style="background:#f0fdf9;border-radius:8px;padding:7px 12px;margin-bottom:5px;font-size:12px;color:#374151">• ${i}</div>`).join("")}`:""}
+
+      ${clientPageUrl?`<a href="${clientPageUrl}" target="_blank" style="display:block;text-align:center;margin-top:14px;color:#3ECFB2;font-size:12px;font-weight:700;text-decoration:none">📄 Ouvrir la fiche complète dans Notion →</a>`:""}
     `);
   }catch(e){
     openModal(`<button onclick="closeModal()" style="float:right;background:none;border:none;font-size:22px;cursor:pointer">×</button>
@@ -311,6 +312,7 @@ function nav(){
   }
   return h;
 }
+
 function canNext(){
   if(step===0)return!!sel;
   if(step===3)return saved;
@@ -329,7 +331,7 @@ function s0(){
       <input placeholder="🔍 Nom ou référence..." value="${q}" oninput="q=this.value;renderS0()" style="flex:1">
       <button onclick="loadClients()" style="background:#f1f5f9;border:1.5px solid #e2e8f0;border-radius:8px;padding:10px 12px;cursor:pointer;font-size:16px;flex-shrink:0">🔄</button>
     </div>
-    <div style="font-size:11px;color:#94a3b8;margin-bottom:8px">${list.length} intervention(s) — <span style="color:#3ECFB2">🟢 live · actualisation auto 30s</span></div>
+    <div style="font-size:11px;color:#94a3b8;margin-bottom:8px">${list.length} intervention(s) — <span style="color:#3ECFB2">🟢 live</span></div>
     <div class="scroll">
       ${list.map(c=>{const{bg,col}=ec(c.etat);return`
         <div class="ci${sel&&sel.pageId===c.pageId?" sel":""}" onclick="setSel('${c.pageId}')">
@@ -356,64 +358,54 @@ function setSel(id){sel=clients.find(c=>c.pageId===id)||null;render();}
 function s1(){
   let html=`<div class="card"><h2>2. Photos d'intervention</h2><p style="font-size:12px;color:#64748b;margin-bottom:14px"><strong>${sel.nom}</strong> · ${sel.m2} m²</p>`;
   PHOTO_CATS.forEach(cat=>{
-    const isSalete=cat.k==="saleté";
-    const borderStyle=isSalete?"border:1.5px solid #f59e0b":"";
-    html+=`<div class="photo-section" style="${borderStyle}">
-      <div class="photo-section-title">
-        <span>${isSalete?"🔍":"📷"} ${cat.l}${cat.note?` <span style="font-size:10px;color:#94a3b8;font-weight:400">${cat.note}</span>`:""}</span>
-        <span style="font-size:11px;color:#94a3b8">${photos[cat.k].length} fichier(s)</span>
-      </div>
+    html+=`<div class="photo-section">
+      <div class="photo-section-title"><span>${cat.l}</span><span style="font-size:11px;color:#94a3b8">${photos[cat.k].length} photo(s)</span></div>
       <div class="photo-grid">${photos[cat.k].map((p,i)=>`<div class="photo-item">
         <img src="${p.data}">
         <button class="del-btn" onclick="delPhoto('${cat.k}',${i})">×</button>
-        <input class="photo-comment" placeholder="Légende..." value="${p.comment||""}" oninput="photos['${cat.k}'][${i}].comment=this.value">
+        <input class="photo-comment" placeholder="Commentaire..." value="${p.comment||""}" oninput="photos['${cat.k}'][${i}].comment=this.value">
       </div>`).join("")}</div>
-      <label class="add-photo-btn"><input type="file" accept="image/*,video/*" multiple onchange="addPhotos('${cat.k}',this)">📷 Ajouter photo(s)</label>
+      <label class="add-photo-btn"><input type="file" accept="image/*" multiple onchange="addPhotos('${cat.k}',this)">📷 Ajouter photo(s)</label>
     </div>`;
   });
   // Médias supplémentaires
   html+=`<div class="photo-section" style="border:1.5px solid #c4b5fd">
-    <div class="photo-section-title"><span>🎬 Médias divers <span style="font-size:10px;color:#94a3b8;font-weight:400">(point d'eau, accès toit, autres)</span></span><span style="font-size:11px;color:#94a3b8">${photos.extra.length} fichier(s)</span></div>
+    <div class="photo-section-title"><span>🎬 Médias supplémentaires <span style="font-size:10px;color:#94a3b8;font-weight:400">(optionnel)</span></span><span style="font-size:11px;color:#94a3b8">${photos.extra.length} fichier(s)</span></div>
     <div class="photo-grid">${photos.extra.map((p,i)=>`<div class="photo-item">
       ${p.type==='video'?`<video src="${p.data}" style="width:100%;height:80px;object-fit:cover;border-radius:8px;border:1px solid #e2e8f0" controls></video>`:`<img src="${p.data}">`}
       <button class="del-btn" onclick="delExtra(${i})">×</button>
-      <input class="photo-comment" placeholder="Légende..." value="${p.comment||""}" oninput="photos.extra[${i}].comment=this.value">
+      <input class="photo-comment" placeholder="Commentaire..." value="${p.comment||""}" oninput="photos.extra[${i}].comment=this.value">
     </div>`).join("")}</div>
     <label class="add-photo-btn"><input type="file" accept="image/*,video/*" multiple onchange="addExtra(this)">📎 Ajouter photo(s) ou vidéo(s)</label>
   </div>`;
-  // Anomalies / Panneaux cassés
+  // Panneaux cassés
   html+=`<div class="photo-section" style="border:1.5px solid #fca5a5">
-    <div class="photo-section-title"><span>⚠️ Anomalies — panneaux endommagés <span style="font-size:10px;color:#94a3b8;font-weight:400">(optionnel)</span></span>
-    <button onclick="addCasse()" style="background:#fee2e2;color:#dc2626;border:none;border-radius:8px;padding:4px 10px;font-size:12px;font-weight:700;cursor:pointer">+ Ajouter</button></div>
+    <div class="photo-section-title"><span>🔴 Panneaux cassés</span><button onclick="addCasse()" style="background:#fee2e2;color:#dc2626;border:none;border-radius:8px;padding:4px 10px;font-size:12px;font-weight:700;cursor:pointer">+ Ajouter</button></div>
     ${panneauxCasses.map((c,i)=>`<div class="casse-item">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-        <strong style="font-size:12px;color:#dc2626">Panneau endommagé #${i+1}</strong>
+        <strong style="font-size:12px;color:#dc2626">Panneau cassé #${i+1}</strong>
         <button onclick="delCasse(${i})" style="background:none;border:none;color:#dc2626;font-size:18px;cursor:pointer;line-height:1">×</button>
       </div>
       <div class="casse-grid">
         <label class="casse-photo-box${c.photo?" has":""}">
           <input type="file" accept="image/*" onchange="setCassePhoto(${i},'photo',this)">
-          ${c.photo?`<img src="${c.photo}">`:`<div style="font-size:18px">📷</div><div style="font-size:10px;color:#94a3b8">Photo dommage</div>`}
+          ${c.photo?`<img src="${c.photo}">`:`<div style="font-size:18px">📷</div><div style="font-size:10px;color:#94a3b8">Photo panneau</div>`}
         </label>
         <label class="casse-photo-box${c.position?" has":""}">
           <input type="file" accept="image/*" onchange="setCassePhoto(${i},'position',this)">
-          ${c.position?`<img src="${c.position}">`:`<div style="font-size:18px">📍</div><div style="font-size:10px;color:#94a3b8">Position sur toit</div>`}
+          ${c.position?`<img src="${c.position}">`:`<div style="font-size:18px">📍</div><div style="font-size:10px;color:#94a3b8">Position</div>`}
         </label>
       </div>
-      <input placeholder="Description du dommage (ex: microfissure, grêle...)" value="${c.comment||""}" oninput="panneauxCasses[${i}].comment=this.value" style="font-size:13px">
-    </div>`).join("")||`<div style="font-size:12px;color:#94a3b8;text-align:center;padding:10px">Aucune anomalie signalée</div>`}
+      <input placeholder="Description du dommage..." value="${c.comment||""}" oninput="panneauxCasses[${i}].comment=this.value" style="font-size:13px">
+    </div>`).join("")||`<div style="font-size:12px;color:#94a3b8;text-align:center;padding:10px">Aucun panneau cassé signalé</div>`}
   </div>`;
   const total=Object.values(photos).flat().length;
-  html+=`<div class="warn">${total} photo(s)/vidéo(s) · ${panneauxCasses.length} anomalie(s)</div></div>`;
+  html+=`<div class="warn">${total} photo(s)/vidéo(s) · ${panneauxCasses.length} panneau(x) cassé(s)</div></div>`;
   return html;
 }
 
 async function addPhotos(key,input){
-  for(const f of Array.from(input.files)){
-    const data=await toDataURL(f);
-    const type=f.type.startsWith("video")?"video":"image";
-    photos[key].push({data,name:f.name,type,comment:""});
-  }render();
+  for(const f of Array.from(input.files)){const data=await toDataURL(f);photos[key].push({data,name:f.name,comment:""});}render();
 }
 function delPhoto(key,i){photos[key].splice(i,1);render();}
 async function addExtra(input){
@@ -428,77 +420,23 @@ async function setCassePhoto(i,field,input){
 }
 
 // ---- Step 2 : Rapport ----
-function salChips(){
-  return SALISSURES_LIST.map(s=>{
-    const active=R.salissures.includes(s);
-    return`<label class="sal-chip${active?" active":""}">
-      <input type="checkbox" ${active?"checked":""} onchange="toggleSal('${s}')">
-      ${s}
-    </label>`;
-  }).join("");
-}
-function toggleSal(s){
-  const i=R.salissures.indexOf(s);
-  if(i>=0)R.salissures.splice(i,1);else R.salissures.push(s);
-  document.getElementById("sal-box").innerHTML=salChips();
-}
-
 function s2(){
   return`<div class="card">
     <h2>3. Informations du rapport</h2>
-
-    <h3>Intervention</h3>
     <div class="grid2">
-      <div><label class="lbl">Date</label><input type="date" value="${R.date}" oninput="R.date=this.value"></div>
-      <div><label class="lbl">Intervenants</label><input type="number" value="${R.intervenants}" oninput="R.intervenants=this.value"></div>
-      <div><label class="lbl">Durée (jours)</label><input type="number" step="0.5" value="${R.duree}" oninput="R.duree=this.value"></div>
-      <div><label class="lbl">Produits</label><input type="text" value="${R.produits}" oninput="R.produits=this.value"></div>
-      <div><label class="lbl">Nacelle</label>
-        <select onchange="R.nacelle=this.value">
-          <option ${R.nacelle==="Non"?"selected":""}>Non</option>
-          <option ${R.nacelle==="Oui"?"selected":""}>Oui</option>
-        </select>
-      </div>
-      <div><label class="lbl">Parking</label><input type="text" value="${R.parking}" placeholder="Ex: allée privée" oninput="R.parking=this.value"></div>
+      <div><label class="lbl">📅 Date</label><input type="date" value="${R.date}" oninput="R.date=this.value"></div>
+      <div><label class="lbl">👷 Intervenants</label><input type="number" value="${R.intervenants}" oninput="R.intervenants=this.value"></div>
+      <div><label class="lbl">⏱ Durée (jours)</label><input type="number" step="0.5" value="${R.duree}" oninput="R.duree=this.value"></div>
+      <div><label class="lbl">🧴 Produits</label><input type="text" value="${R.produits}" oninput="R.produits=this.value"></div>
     </div>
-
-    <h3>Mise en place chantier</h3>
-    <div class="grid2">
-      <div><label class="lbl">Échelle</label><input type="text" value="${R.materiel_echelle}" placeholder="Ex: double 6m" oninput="R.materiel_echelle=this.value"></div>
-      <div><label class="lbl">Échelle de toit</label><input type="text" value="${R.materiel_echelle_toit}" placeholder="Oui / Non" oninput="R.materiel_echelle_toit=this.value"></div>
-      <div><label class="lbl">Pompe</label>
-        <select onchange="R.materiel_pompe=this.value">
-          <option ${R.materiel_pompe==="Non"?"selected":""}>Non</option>
-          <option ${R.materiel_pompe==="Oui"?"selected":""}>Oui</option>
-        </select>
-      </div>
-      <div><label class="lbl">Tuyau (mètres)</label><input type="number" value="${R.materiel_tuyau}" oninput="R.materiel_tuyau=this.value"></div>
-    </div>
-
-    <h3>Évaluation terrain</h3>
-    <label class="lbl">Accès toiture</label>
-    <input type="text" value="${R.acces_toiture}" placeholder="Ex: échelle double côté gauche" oninput="R.acces_toiture=this.value">
-    <label class="lbl">État des cellules</label>
-    <input type="text" value="${R.etat_cellules}" placeholder="RAS ou description" oninput="R.etat_cellules=this.value">
-    <label class="lbl">Type de salissures</label>
-    <div class="salissure-checks" id="sal-box">${salChips()}</div>
-    <label class="lbl" style="margin-top:10px">Difficulté particulière</label>
-    <input type="text" value="${R.difficulte}" placeholder="RAS ou description" oninput="R.difficulte=this.value">
-    <label class="lbl">Informations complémentaires</label>
-    <textarea rows="2" oninput="R.infos_complementaires=this.value" placeholder="Tout autre info utile...">${R.infos_complementaires}</textarea>
-
-    <h3>Observations & Synthèse</h3>
-    <label class="lbl">Tâches significatives</label>
-    <textarea oninput="R.taches_desc=this.value" placeholder="Décrire les travaux particuliers effectués...">${R.taches_desc}</textarea>
-    <label class="lbl">Synthèse technicien</label>
-    <textarea oninput="R.synthese=this.value" placeholder="État général de l'installation, observations notables, déroulement...">${R.synthese}</textarea>
-    <label class="lbl">Prochaine intervention recommandée</label>
-    <input type="text" value="${R.prochaine_intervention}" oninput="R.prochaine_intervention=this.value">
-
-    ${panneauxCasses.length?`
-    <h3>Anomalies — description</h3>
-    <textarea oninput="R.anomalie_description=this.value" placeholder="Description globale des anomalies constatées...">${R.anomalie_description}</textarea>
-    `:""}
+    <label class="lbl">📝 Observations générales</label>
+    <textarea oninput="R.observations=this.value" placeholder="État général, type de saleté...">${R.observations}</textarea>
+    <label class="lbl">🔧 Tâches significatives</label>
+    <textarea oninput="R.taches=this.value" placeholder="Travaux particuliers...">${R.taches}</textarea>
+    <label class="lbl">⚠️ Difficultés rencontrées</label>
+    <textarea rows="2" oninput="R.difficultes=this.value" placeholder="RAS ou description...">${R.difficultes}</textarea>
+    <label class="lbl">💡 Recommandations</label>
+    <textarea oninput="R.recommandations=this.value" placeholder="Pour la prochaine intervention...">${R.recommandations}</textarea>
   </div>`;
 }
 
@@ -509,18 +447,18 @@ function s3(){
     <div class="stitle">${cat.l}</div>
     <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px">
       ${photos[cat.k].map(p=>`<div style="text-align:center">
-        ${p.type==="video"?`<video src="${p.data}" style="width:70px;height:55px;object-fit:cover;border-radius:6px" controls></video>`:`<img src="${p.data}" style="width:70px;height:55px;object-fit:cover;border-radius:6px;border:1px solid #e2e8f0">`}
+        <img src="${p.data}" style="width:70px;height:55px;object-fit:cover;border-radius:6px;border:1px solid #e2e8f0">
         ${p.comment?`<div style="font-size:9px;color:#64748b;max-width:70px">${p.comment}</div>`:""}
       </div>`).join("")}
     </div>`).join("");
-  const extraHtml=photos.extra.length?`<div class="stitle">🎬 Médias divers</div>
+  const extraHtml=photos.extra.length?`<div class="stitle">🎬 Médias supplémentaires</div>
     <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px">
       ${photos.extra.map(p=>`<div style="text-align:center">
         ${p.type==="video"?`<video src="${p.data}" style="width:70px;height:55px;object-fit:cover;border-radius:6px" controls></video>`:`<img src="${p.data}" style="width:70px;height:55px;object-fit:cover;border-radius:6px;border:1px solid #e2e8f0">`}
         ${p.comment?`<div style="font-size:9px;color:#64748b;max-width:70px">${p.comment}</div>`:""}
       </div>`).join("")}
     </div>`:"";
-  const casseHtml=panneauxCasses.length?`<div class="stitle" style="color:#dc2626">⚠️ Anomalies (${panneauxCasses.length})</div>
+  const casseHtml=panneauxCasses.length?`<div class="stitle">🔴 Panneaux cassés (${panneauxCasses.length})</div>
     ${panneauxCasses.map((c,i)=>`<div style="background:#fff5f5;border-radius:8px;padding:8px;margin-bottom:6px;font-size:12px">
       <strong>Panneau #${i+1}</strong>${c.comment?" — "+c.comment:""}
       <div style="display:flex;gap:6px;margin-top:4px">
@@ -541,17 +479,16 @@ function s3(){
         <div><span style="color:#64748b">Date :</span> <strong>${R.date}</strong></div>
         <div><span style="color:#64748b">Intervenants :</span> <strong>${R.intervenants}</strong></div>
         <div><span style="color:#64748b">Durée :</span> <strong>${R.duree}j</strong></div>
-        <div><span style="color:#64748b">Nacelle :</span> <strong>${R.nacelle}</strong></div>
+        <div><span style="color:#64748b">Produits :</span> <strong>${R.produits}</strong></div>
         <div><span style="color:#64748b">Photos :</span> <strong>${total}</strong></div>
       </div>
-      ${R.salissures.length?`<div class="stitle">Salissures</div><div class="sec">${R.salissures.join(" · ")}</div>`:""}
-      ${R.acces_toiture?`<div class="stitle">Accès toiture</div><div class="sec">${R.acces_toiture}</div>`:""}
-      ${R.taches_desc?`<div class="stitle">Tâches significatives</div><div class="sec">${R.taches_desc}</div>`:""}
-      ${R.synthese?`<div class="stitle">Synthèse technicien</div><div class="sec">${R.synthese}</div>`:""}
-      ${R.prochaine_intervention?`<div class="stitle">Prochaine intervention</div><div class="sec">${R.prochaine_intervention}</div>`:""}
-      ${panneauxCasses.length?`<div class="stitle" style="color:#dc2626">⚠️ ${panneauxCasses.length} anomalie(s) signalée(s)</div>`:""}
+      ${R.observations?`<div class="stitle">📝 Observations</div><div class="sec">${R.observations}</div>`:""}
+      ${R.taches?`<div class="stitle">🔧 Tâches</div><div class="sec">${R.taches}</div>`:""}
+      ${R.difficultes?`<div class="stitle">⚠️ Difficultés</div><div class="sec">${R.difficultes}</div>`:""}
+      ${R.recommandations?`<div class="stitle">💡 Recommandations</div><div class="sec">${R.recommandations}</div>`:""}
       ${thumbsHtml}${extraHtml}${casseHtml}
     </div>
+    <button class="btn bl" onclick="printPDF()">🖨️ Exporter PDF</button>
     ${!saved
       ?`<button class="btn bp" id="btn-save" onclick="saveNotion()">${sending?"⏳ Envoi...":"🚀 Enregistrer dans Notion"}</button>`
       :`<div class="ok-box">✅ Enregistré dans Notion !</div>`}
@@ -571,6 +508,7 @@ function s4(){
     <div class="info">💡 Ouvrez votre messagerie → joignez le PDF → envoyez !</div>
     <button class="btn bp" onclick="openMail()" style="margin-top:10px">📨 Ouvrir dans ma messagerie</button>
     <button class="btn bl" id="btn-cp" onclick="copyMail()">📋 Copier l'email</button>
+    <button class="btn bl" onclick="printPDF()">🖨️ Ré-exporter PDF</button>
     <button class="btn bd" onclick="reset()" style="margin-top:4px">🔄 Nouveau rapport</button>
   </div>`;
 }
@@ -582,7 +520,6 @@ async function saveNotion(){
   const btn=document.getElementById("btn-save");
   if(btn)btn.textContent="⏳ Envoi vers Notion...";
   try{
-    // On remplace le contenu de la page avec la nouvelle structure
     const res=await notionCall("PATCH",`blocks/${sel.pageId}/children`,{children:buildBlocks()});
     if(res.object==="error")throw new Error(res.message);
     saved=true;
@@ -591,100 +528,43 @@ async function saveNotion(){
   sending=false;render();
 }
 
-function txt(content){return{type:"paragraph",paragraph:{rich_text:[{type:"text",text:{content:String(content||"")}}]}};}
-function h2(content){return{type:"heading_2",heading_2:{rich_text:[{type:"text",text:{content}}]}};}
-function h3(content){return{type:"heading_3",heading_3:{rich_text:[{type:"text",text:{content}}]}};}
-function divider(){return{type:"divider",divider:{}};}
-function callout(content,emoji,color){return{type:"callout",callout:{rich_text:[{type:"text",text:{content}}],icon:{type:"emoji",emoji:emoji||"📋"},color:color||"gray_background"}};}
-function bullet(content){return{type:"bulleted_list_item",bulleted_list_item:{rich_text:[{type:"text",text:{content:String(content||"")}}]}};}
-
 function buildBlocks(){
   const b=[];
-
-  // ---- 1. Identification ----
-  b.push(divider());
-  b.push(h2("1. Identification du chantier"));
-  b.push(txt(`Client : ${sel.nom}`));
-  b.push(txt(`Surface : ${sel.m2} m²`));
-  b.push(txt(`Date d'intervention : ${R.date}`));
-  b.push(txt(`Intervenants : ${R.intervenants}`));
-  b.push(txt(`Durée : ${R.duree} jour(s)`));
-  b.push(txt(`Nacelle : ${R.nacelle}`));
-  if(R.parking)b.push(txt(`Parking : ${R.parking}`));
-  b.push(txt(`Produits : ${R.produits}`));
-
-  // ---- 2. Mise en place chantier ----
-  b.push(divider());
-  b.push(h2("2. Mise en place chantier"));
-  b.push(h3("Matériel"));
-  b.push(bullet(`Échelle : ${R.materiel_echelle||"—"}`));
-  b.push(bullet(`Échelle de toit : ${R.materiel_echelle_toit||"—"}`));
-  b.push(bullet(`Pompe : ${R.materiel_pompe}`));
-  b.push(bullet(`Mètres de tuyau : ${R.materiel_tuyau} m`));
-  b.push(h3("Évaluation terrain"));
-  b.push(bullet(`Accès toiture : ${R.acces_toiture||"—"}`));
-  b.push(bullet(`État des cellules : ${R.etat_cellules}`));
-  b.push(bullet(`Type de salissures : ${R.salissures.length?R.salissures.join(", "):"—"}`));
-  b.push(bullet(`Difficulté particulière : ${R.difficulte||"RAS"}`));
-  if(R.infos_complementaires)b.push(bullet(`Informations complémentaires : ${R.infos_complementaires}`));
-
-  // ---- 3. Photos ----
-  b.push(divider());
-  b.push(h2("3. Photos d'intervention"));
-
-  // Note : les photos ne peuvent pas être uploadées via l'API Notion (pas de support binaire).
-  // On liste les métadonnées pour chaque catégorie.
+  const t=txt=>({type:"paragraph",paragraph:{rich_text:[{type:"text",text:{content:String(txt||"")}}]}});
+  const h2=txt=>({type:"heading_2",heading_2:{rich_text:[{type:"text",text:{content:txt}}]}});
+  const div=()=>({type:"divider",divider:{}});
+  b.push(div());
+  b.push(h2("Rapport d'intervention "+new Date().getFullYear()));
+  b.push(t("📅 Date : "+R.date));
+  b.push(t("👷 Intervenants : "+R.intervenants));
+  b.push(t("⏱ Durée : "+R.duree+" jour(s)"));
+  b.push(t("🧴 Produits : "+R.produits));
+  b.push(t("📐 Surface : "+sel.m2+" m²"));
+  if(R.observations){b.push(h2("Observations générales"));b.push(t(R.observations));}
+  if(R.taches){b.push(h2("Tâches significatives"));b.push(t(R.taches));}
+  if(R.difficultes){b.push(h2("Difficultés rencontrées"));b.push(t(R.difficultes));}
+  if(R.recommandations){b.push(h2("Recommandations"));b.push(t(R.recommandations));}
   PHOTO_CATS.forEach(cat=>{
     if(photos[cat.k].length){
-      b.push(h3(cat.l));
-      photos[cat.k].forEach((p,i)=>{
-        b.push(txt(`Photo ${i+1}${p.comment?" — "+p.comment:""}`));
-      });
+      b.push(h2(cat.l));
+      photos[cat.k].forEach((p,i)=>b.push(t("Photo "+(i+1)+(p.comment?" : "+p.comment:""))));
     }
   });
   if(photos.extra.length){
-    b.push(h3("Médias divers"));
-    photos.extra.forEach((p,i)=>b.push(txt(`${p.type==="video"?"Vidéo":"Photo"} ${i+1}${p.comment?" — "+p.comment:""}`)));
+    b.push(h2("Médias supplémentaires"));
+    photos.extra.forEach((p,i)=>b.push(t((p.type==="video"?"🎬":"📷")+" "+(i+1)+(p.comment?" : "+p.comment:""))));
   }
-
-  // ---- 4. Anomalies ----
-  b.push(divider());
-  b.push(h2("4. Anomalies constatées"));
   if(panneauxCasses.length){
-    b.push(callout(
-      `${panneauxCasses.length} panneau(x) endommagé(s) détecté(s).\n${R.anomalie_description||""}\n\nRecommandation : expertise par l'installateur avant la prochaine saison. Ce constat est transmis à titre informatif — Cleanosolar Sàrl décline toute responsabilité sur l'état préexistant des équipements.`,
-      "⚠️","red_background"
-    ));
-    panneauxCasses.forEach((c,i)=>{
-      b.push(bullet(`Panneau #${i+1}${c.comment?" — "+c.comment:""}`));
-    });
-  }else{
-    b.push(txt("RAS — aucune anomalie constatée."));
+    b.push(h2("🔴 Panneaux cassés ("+panneauxCasses.length+")"));
+    panneauxCasses.forEach((c,i)=>b.push(t("Panneau #"+(i+1)+(c.comment?" — "+c.comment:""))));
   }
-
-  // ---- 5. Synthèse ----
-  b.push(divider());
-  b.push(h2("5. Synthèse technicien"));
-  if(R.taches_desc){
-    b.push(h3("Tâches significatives"));
-    b.push(txt(R.taches_desc));
-  }
-  b.push(h3("Observations générales"));
-  b.push(txt(R.synthese||"—"));
-
-  // ---- 6. Prochaine intervention ----
-  b.push(divider());
-  b.push(h2("6. Prochaine intervention recommandée"));
-  b.push(callout(`Préconisation : ${R.prochaine_intervention}`,"📅","green_background"));
-
+  b.push(div());
   return b;
 }
 
 function buildEmail(){
   emailObj=`Rapport d'intervention – ${sel.nom} – ${R.date}`;
-  const salNote=R.salissures.length?`\nSalissures traitées : ${R.salissures.join(", ")}.`:"";
-  const casseNote=panneauxCasses.length?`\n\n⚠️ ${panneauxCasses.length} panneau(x) endommagé(s) constaté(s) lors de l'intervention — voir rapport joint pour détails.`:"";
-  const syntheseNote=R.synthese?`\n\n${R.synthese}`:"";
+  const casseNote=panneauxCasses.length?`\n⚠️ ${panneauxCasses.length} panneau(x) cassé(s) signalé(s) — voir rapport joint.`:"";
   emailBody=`Madame, Monsieur,
 
 Nous vous faisons parvenir ci-joint le rapport d'intervention concernant le nettoyage de vos panneaux solaires.
@@ -692,23 +572,19 @@ Nous vous faisons parvenir ci-joint le rapport d'intervention concernant le nett
 📅 Date : ${R.date}
 📐 Surface nettoyée : ${sel.m2} m²
 👷 Équipe : ${R.intervenants} intervenant(s) — Durée : ${R.duree} jour(s)
-🧴 Produits utilisés : ${R.produits}${salNote}${syntheseNote}${casseNote}
+🧴 Produits utilisés : ${R.produits}
+${R.observations?"\nObservations : "+R.observations:""}${R.recommandations?"\nRecommandations : "+R.recommandations:""}${casseNote}
 
-🔁 Prochaine intervention recommandée : ${R.prochaine_intervention}
-
-Le rapport complet avec photos est disponible en pièce jointe.
+Le rapport complet avec photos est disponible en pièce jointe (PDF).
 
 Nous restons à votre disposition pour toute question.
 
 Cordialement,
-Arthur Ravenel
-Cleanosolar Sàrl
-Route de Saint-Cergue 311, 1260 Nyon
-contact@cleanosolar.ch`;
+L'équipe Cleanosolar`;
 }
 
 function openMail(){
-  window.location.href=`mailto:${sel.email||""}?subject=${encodeURIComponent(emailObj)}&body=${encodeURIComponent(emailBody+"\n\n⚠️ Pensez à joindre le PDF.")}`;
+  window.location.href=`mailto:${sel.email||""}?subject=${encodeURIComponent(emailObj)}&body=${encodeURIComponent(emailBody+"\n\n⚠️ Joindre le PDF.")}`;
 }
 
 function copyMail(){
@@ -720,11 +596,62 @@ function copyMail(){
   setTimeout(()=>{b.textContent="📋 Copier l'email";b.className="btn bl";},2000);
 }
 
+function printPDF(){
+  const total=Object.values(photos).flat().length;
+  const photosHtml=PHOTO_CATS.filter(cat=>photos[cat.k].length>0).map(cat=>`
+    <h2>${cat.l}</h2>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px">
+      ${photos[cat.k].map(p=>`<div style="text-align:center">
+        <img src="${p.data}" style="width:130px;height:100px;object-fit:cover;border-radius:6px;border:1px solid #e2e8f0">
+        ${p.comment?`<div style="font-size:9px;color:#64748b;max-width:130px;margin-top:2px">${p.comment}</div>`:""}
+      </div>`).join("")}
+    </div>`).join("");
+  const casseHtml=panneauxCasses.length?`<h2>🔴 Panneaux cassés</h2>${panneauxCasses.map((c,i)=>`
+    <div style="background:#fff5f5;border-radius:8px;padding:10px;margin-bottom:8px;border:1px solid #fca5a5">
+      <strong>Panneau #${i+1}</strong>${c.comment?" — "+c.comment:""}
+      <div style="display:flex;gap:8px;margin-top:6px">
+        ${c.photo?`<div><img src="${c.photo}" style="width:130px;height:100px;object-fit:cover;border-radius:6px"><div style="font-size:9px;text-align:center;color:#64748b">Panneau</div></div>`:""}
+        ${c.position?`<div><img src="${c.position}" style="width:130px;height:100px;object-fit:cover;border-radius:6px"><div style="font-size:9px;text-align:center;color:#64748b">Position</div></div>`:""}
+      </div>
+    </div>`).join("")}`:"";
+  const w=window.open("","_blank");
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Rapport – ${sel.nom}</title>
+  <style>body{font-family:Arial,sans-serif;padding:28px;color:#1a1a1a;font-size:13px}
+  .hdr{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #3ECFB2;padding-bottom:14px;margin-bottom:18px}
+  .logo{font-size:22px;font-weight:900;color:#1a1a1a;letter-spacing:-0.5px}
+  .meta{display:grid;grid-template-columns:1fr 1fr;gap:5px 20px;background:#f0fdf9;border-radius:8px;padding:12px;margin-bottom:14px;font-size:12px;border:1px solid #3ECFB2}
+  h2{font-size:12px;font-weight:700;color:#1a1a1a;border-left:3px solid #3ECFB2;padding-left:8px;margin:14px 0 6px}
+  .sec{background:#f8fafc;border-radius:6px;padding:9px 12px;font-size:12px;line-height:1.6;margin-bottom:8px}
+  .footer{margin-top:24px;border-top:1px solid #e2e8f0;padding-top:10px;font-size:10px;color:#94a3b8;display:flex;justify-content:space-between}
+  @media print{body{padding:16px}}</style></head><body>
+  <div class="hdr">
+    <div><div class="logo">cleanosolar</div><div style="font-size:10px;color:#64748b;margin-top:2px">Nettoyage professionnel de panneaux solaires</div></div>
+    <div style="text-align:right;font-size:11px"><div style="font-weight:700;font-size:13px">RAPPORT D'INTERVENTION</div><div>Réf. ${sel.id||"—"}</div><div>${R.date}</div></div>
+  </div>
+  <div style="font-weight:700;font-size:15px;margin-bottom:12px">${sel.nom}</div>
+  <div class="meta">
+    <div><span style="color:#64748b">Surface :</span> <strong>${sel.m2} m²</strong></div>
+    <div><span style="color:#64748b">Date :</span> <strong>${R.date}</strong></div>
+    <div><span style="color:#64748b">Intervenants :</span> <strong>${R.intervenants}</strong></div>
+    <div><span style="color:#64748b">Durée :</span> <strong>${R.duree} jour(s)</strong></div>
+    <div><span style="color:#64748b">Produits :</span> <strong>${R.produits}</strong></div>
+    <div><span style="color:#64748b">Photos :</span> <strong>${total}</strong></div>
+  </div>
+  ${R.observations?`<h2>📝 Observations générales</h2><div class="sec">${R.observations}</div>`:""}
+  ${R.taches?`<h2>🔧 Tâches significatives</h2><div class="sec">${R.taches}</div>`:""}
+  ${R.difficultes?`<h2>⚠️ Difficultés</h2><div class="sec">${R.difficultes}</div>`:""}
+  ${R.recommandations?`<h2>💡 Recommandations</h2><div class="sec">${R.recommandations}</div>`:""}
+  ${photosHtml}${casseHtml}
+  <div class="footer"><div>Cleanosolar SA</div><div>Généré le ${new Date().toLocaleDateString("fr-CH")}</div></div>
+  </body></html>`);
+  w.document.close();setTimeout(()=>w.print(),500);
+}
+
 function reset(){
   step=0;sel=null;saved=false;sending=false;emailObj="";emailBody="";q="";
-  photos={toit:[],avant:[],apres:[],taches:[],saleté:[],eau:[],acces:[],extra:[]};
+  photos={toit:[],avant:[],apres:[],tache:[],eau:[],acces:[],extra:[]};
   panneauxCasses=[];
-  R={date:today,intervenants:"2",duree:"0.5",produits:"Eau pure",acces_toiture:"",etat_cellules:"RAS",salissures:[],difficulte:"RAS",infos_complementaires:"",materiel_echelle:"",materiel_echelle_toit:"",materiel_pompe:"Non",materiel_tuyau:"30",observations:"",synthese:"",taches_desc:"",prochaine_intervention:"Tous les 2 à 3 ans",anomalie_description:"",nacelle:"Non",parking:""};
+  R={date:today,intervenants:"2",duree:"0.5",produits:"Eau pure",observations:"",taches:"",difficultes:"",recommandations:""};
   showErr("");render();
 }
 
